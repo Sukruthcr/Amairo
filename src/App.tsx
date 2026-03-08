@@ -16,6 +16,10 @@ import AdminRiders from "./pages/admin/AdminRiders";
 import AdminOrders from "./pages/admin/AdminOrders";
 import AdminUsers from "./pages/admin/AdminUsers";
 import VendorDashboard from "./pages/vendor/VendorDashboard";
+import VendorProducts from "./pages/vendor/VendorProducts";
+import VendorStockUpdate from "./pages/vendor/VendorStockUpdate";
+import VendorOrders from "./pages/vendor/VendorOrders";
+import VendorSales from "./pages/vendor/VendorSales";
 import RiderDashboard from "./pages/rider/RiderDashboard";
 import NotFound from "./pages/NotFound";
 
