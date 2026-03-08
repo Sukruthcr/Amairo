@@ -84,6 +84,26 @@ const VendorDashboard = () => {
     }
   };
 
+  const saveShopAddress = async () => {
+    if (!shopAddress.trim()) {
+      toast({ title: "Please enter your shop address", variant: "destructive" });
+      return;
+    }
+    setSavingAddress(true);
+    const { error } = await supabase
+      .from("profiles")
+      .update({ shop_address: shopAddress.trim() })
+      .eq("user_id", user!.id);
+    setSavingAddress(false);
+    if (error) {
+      toast({ title: "Error saving address", variant: "destructive" });
+    } else {
+      toast({ title: "🏠 Shop address saved!" });
+      setShopAddress("");
+      refetchProfile();
+    }
+  };
+
   const { data: productCount = 0 } = useQuery({
     queryKey: ["vendor-dash-products", user?.id],
     queryFn: async () => {
