@@ -31,7 +31,7 @@ const steps = [
 ];
 
 const testimonials = [
-  { name: "Priya S.", role: "Customer", text: "Super fast delivery and always fresh products. Love using Smart Delivery Hub!", rating: 5 },
+  { name: "Priya S.", role: "Customer", text: "Super fast delivery and always fresh products. Love using Amairo!", rating: 5 },
   { name: "Rajesh K.", role: "Vendor", text: "Managing my shop inventory has never been easier. Great platform for vendors!", rating: 5 },
   { name: "Amit D.", role: "Rider", text: "The GPS tracking and clear delivery instructions make my job smooth.", rating: 4 },
 ];
