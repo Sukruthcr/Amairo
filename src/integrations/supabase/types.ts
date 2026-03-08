@@ -222,6 +222,7 @@ export type Database = {
           pan_number: string | null
           phone: string | null
           rejection_reason: string | null
+          shop_address: string | null
           shop_name: string | null
           updated_at: string
           user_id: string
@@ -240,6 +241,7 @@ export type Database = {
           pan_number?: string | null
           phone?: string | null
           rejection_reason?: string | null
+          shop_address?: string | null
           shop_name?: string | null
           updated_at?: string
           user_id: string
@@ -258,6 +260,7 @@ export type Database = {
           pan_number?: string | null
           phone?: string | null
           rejection_reason?: string | null
+          shop_address?: string | null
           shop_name?: string | null
           updated_at?: string
           user_id?: string

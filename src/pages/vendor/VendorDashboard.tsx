@@ -6,7 +6,7 @@ import { motion } from "framer-motion";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
-import { Store, Package, TrendingUp, ClipboardCheck, ShoppingCart, BarChart3, MapPin, Locate, MessageSquare, Star } from "lucide-react";
+import { Store, Package, TrendingUp, ClipboardCheck, ShoppingCart, BarChart3, MapPin, Locate, MessageSquare, Star, Home } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
@@ -17,13 +17,15 @@ const VendorDashboard = () => {
   const [savingLoc, setSavingLoc] = useState(false);
   const [manualLat, setManualLat] = useState("");
   const [manualLng, setManualLng] = useState("");
+  const [shopAddress, setShopAddress] = useState("");
+  const [savingAddress, setSavingAddress] = useState(false);
 
   const { data: profile, refetch: refetchProfile } = useQuery({
     queryKey: ["vendor-profile-loc", user?.id],
     queryFn: async () => {
       const { data } = await supabase
         .from("profiles")
-        .select("latitude, longitude")
+        .select("latitude, longitude, shop_address")
         .eq("user_id", user!.id)
         .single();
       return data;
@@ -78,6 +80,26 @@ const VendorDashboard = () => {
       toast({ title: "📍 Shop location saved!" });
       setManualLat("");
       setManualLng("");
+      refetchProfile();
+    }
+  };
+
+  const saveShopAddress = async () => {
+    if (!shopAddress.trim()) {
+      toast({ title: "Please enter your shop address", variant: "destructive" });
+      return;
+    }
+    setSavingAddress(true);
+    const { error } = await supabase
+      .from("profiles")
+      .update({ shop_address: shopAddress.trim() })
+      .eq("user_id", user!.id);
+    setSavingAddress(false);
+    if (error) {
+      toast({ title: "Error saving address", variant: "destructive" });
+    } else {
+      toast({ title: "🏠 Shop address saved!" });
+      setShopAddress("");
       refetchProfile();
     }
   };
@@ -196,6 +218,28 @@ const VendorDashboard = () => {
               {profile?.latitude && profile?.longitude && (
                 <p className="text-xs text-muted-foreground mt-2">Current: {profile.latitude.toFixed(5)}, {profile.longitude.toFixed(5)}</p>
               )}
+            </div>
+            {/* Shop Address */}
+            <div className="px-6 pb-5 pt-0 border-t border-border mt-0 pt-4">
+              <div className="flex items-center gap-2 mb-2">
+                <Home className="h-3.5 w-3.5 text-muted-foreground" />
+                <p className="text-xs text-muted-foreground font-medium">Shop address (typed):</p>
+              </div>
+              {profile?.shop_address && (
+                <p className="text-sm text-foreground mb-2 bg-muted/50 rounded-md px-3 py-2">{profile.shop_address}</p>
+              )}
+              <div className="flex gap-2">
+                <Input
+                  placeholder="e.g. 42, MG Road, Indiranagar, Bangalore 560038"
+                  value={shopAddress}
+                  onChange={(e) => setShopAddress(e.target.value)}
+                  className="text-sm"
+                  maxLength={300}
+                />
+                <Button size="sm" onClick={saveShopAddress} disabled={savingAddress || !shopAddress.trim()}>
+                  {savingAddress ? "Saving..." : "Save"}
+                </Button>
+              </div>
             </div>
           </Card>
         </motion.div>
