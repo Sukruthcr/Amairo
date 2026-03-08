@@ -230,9 +230,14 @@ const RiderDeliveries = () => {
                                 </p>
                               </div>
                               {hasCustomerLoc && o.status === "picked_up" && (
-                                <Button size="sm" variant="default" className="gap-1 shrink-0" onClick={() => openGoogleMaps(o.customer_lat, o.customer_lng)}>
-                                  <Navigation className="h-3.5 w-3.5" /> Navigate
-                                </Button>
+                                <div className="flex gap-1 shrink-0">
+                                  <Button size="sm" variant="default" className="gap-1" onClick={() => openNavigation(o.customer_lat, o.customer_lng)}>
+                                    <Navigation className="h-3.5 w-3.5" /> Navigate
+                                  </Button>
+                                  <Button size="sm" variant="outline" className="px-2" onClick={() => copyLocation(o.customer_lat, o.customer_lng, "Customer")}>
+                                    <Copy className="h-3.5 w-3.5" />
+                                  </Button>
+                                </div>
                               )}
                             </div>
                           </div>

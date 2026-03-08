@@ -158,9 +158,23 @@ const VendorDashboard = () => {
               </div>
               <Button size="sm" variant={profile?.latitude ? "outline" : "default"} className="gap-1 shrink-0" onClick={saveShopLocation} disabled={savingLoc}>
                 <Locate className={`h-3.5 w-3.5 ${savingLoc ? "animate-spin" : ""}`} />
-                {savingLoc ? "Saving..." : profile?.latitude ? "Update" : "Set Location"}
+                {savingLoc ? "Saving..." : profile?.latitude ? "Update" : "Auto Detect"}
               </Button>
             </CardContent>
+            {/* Manual entry */}
+            <div className="px-6 pb-5 pt-0">
+              <p className="text-xs text-muted-foreground mb-2">Or enter coordinates manually:</p>
+              <div className="flex gap-2">
+                <Input type="number" step="any" placeholder="Latitude" value={manualLat} onChange={(e) => setManualLat(e.target.value)} className="text-sm" />
+                <Input type="number" step="any" placeholder="Longitude" value={manualLng} onChange={(e) => setManualLng(e.target.value)} className="text-sm" />
+                <Button size="sm" onClick={saveManualLocation} disabled={savingLoc || !manualLat || !manualLng}>
+                  Save
+                </Button>
+              </div>
+              {profile?.latitude && profile?.longitude && (
+                <p className="text-xs text-muted-foreground mt-2">Current: {profile.latitude.toFixed(5)}, {profile.longitude.toFixed(5)}</p>
+              )}
+            </div>
           </Card>
         </motion.div>
 
