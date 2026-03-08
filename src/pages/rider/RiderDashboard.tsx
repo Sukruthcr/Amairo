@@ -4,11 +4,43 @@ import { Card, CardContent } from "@/components/ui/card";
 import { motion } from "framer-motion";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
-import { useQuery } from "@tanstack/react-query";
-import { Bike, Package, MapPin, IndianRupee, ClipboardList, BarChart3 } from "lucide-react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useToast } from "@/hooks/use-toast";
+import { Bike, Package, MapPin, IndianRupee, ClipboardList, BarChart3, Bell } from "lucide-react";
+import { useEffect } from "react";
 
 const RiderDashboard = () => {
   const { user } = useAuth();
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
+
+  // Realtime: listen for orders assigned to this rider
+  useEffect(() => {
+    if (!user) return;
+    const channel = supabase
+      .channel("rider-assignment-notify")
+      .on("postgres_changes", {
+        event: "UPDATE",
+        schema: "public",
+        table: "orders",
+        filter: `rider_id=eq.${user.id}`,
+      }, (payload) => {
+        if (payload.new.status === "dispatched") {
+          toast({
+            title: "🚀 New Delivery Assigned!",
+            description: `Order #${(payload.new.id as string).slice(0, 8)} — ₹${Number(payload.new.total).toFixed(0)}`,
+          });
+          // Refresh all rider queries
+          queryClient.invalidateQueries({ queryKey: ["rider-dash"] });
+          queryClient.invalidateQueries({ queryKey: ["rider-deliveries"] });
+          queryClient.invalidateQueries({ queryKey: ["rider-dash-deliveries"] });
+          queryClient.invalidateQueries({ queryKey: ["rider-dash-active"] });
+          queryClient.invalidateQueries({ queryKey: ["rider-dash-earnings"] });
+        }
+      })
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, [user, queryClient, toast]);
 
   const { data: todayDeliveries = 0 } = useQuery({
     queryKey: ["rider-dash-deliveries", user?.id],
@@ -48,7 +80,6 @@ const RiderDashboard = () => {
         .eq("rider_id", user!.id)
         .eq("status", "delivered")
         .gte("created_at", today);
-      // Rider earns 10% of order total
       return data?.reduce((s, o) => s + Number(o.total) * 0.1, 0) || 0;
     },
     enabled: !!user,
