@@ -14,6 +14,123 @@ export type Database = {
   }
   public: {
     Tables: {
+      order_items: {
+        Row: {
+          id: string
+          order_id: string
+          price: number
+          product_id: string
+          quantity: number
+        }
+        Insert: {
+          id?: string
+          order_id: string
+          price?: number
+          product_id: string
+          quantity?: number
+        }
+        Update: {
+          id?: string
+          order_id?: string
+          price?: number
+          product_id?: string
+          quantity?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_items_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "order_items_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      orders: {
+        Row: {
+          created_at: string
+          customer_id: string
+          delivery_address: string | null
+          id: string
+          rider_id: string | null
+          status: string
+          total: number
+          updated_at: string
+          vendor_id: string
+        }
+        Insert: {
+          created_at?: string
+          customer_id: string
+          delivery_address?: string | null
+          id?: string
+          rider_id?: string | null
+          status?: string
+          total?: number
+          updated_at?: string
+          vendor_id: string
+        }
+        Update: {
+          created_at?: string
+          customer_id?: string
+          delivery_address?: string | null
+          id?: string
+          rider_id?: string | null
+          status?: string
+          total?: number
+          updated_at?: string
+          vendor_id?: string
+        }
+        Relationships: []
+      }
+      products: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean
+          name: string
+          photo_approved: boolean
+          photo_url: string | null
+          price: number
+          unit: string
+          updated_at: string
+          vendor_id: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          name: string
+          photo_approved?: boolean
+          photo_url?: string | null
+          price?: number
+          unit?: string
+          updated_at?: string
+          vendor_id: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          photo_approved?: boolean
+          photo_url?: string | null
+          price?: number
+          unit?: string
+          updated_at?: string
+          vendor_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -43,6 +160,38 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      stock_updates: {
+        Row: {
+          id: string
+          product_id: string
+          quantity: number
+          updated_at: string
+          vendor_id: string
+        }
+        Insert: {
+          id?: string
+          product_id: string
+          quantity?: number
+          updated_at?: string
+          vendor_id: string
+        }
+        Update: {
+          id?: string
+          product_id?: string
+          quantity?: number
+          updated_at?: string
+          vendor_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "stock_updates_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_roles: {
         Row: {
