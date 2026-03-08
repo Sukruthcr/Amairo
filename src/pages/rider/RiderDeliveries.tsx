@@ -196,7 +196,7 @@ const RiderDeliveries = () => {
                                 </p>
                               </div>
                               {hasCustomerLoc && o.status === "picked_up" && (
-                                <Button size="sm" variant="default" className="gap-1 shrink-0" onClick={() => openGoogleMaps(o.customer_lat, o.customer_lng, "Customer")}>
+                                <Button size="sm" variant="default" className="gap-1 shrink-0" onClick={() => openGoogleMaps(o.customer_lat, o.customer_lng)}>
                                   <Navigation className="h-3.5 w-3.5" /> Navigate
                                 </Button>
                               )}
