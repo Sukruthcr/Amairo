@@ -207,9 +207,14 @@ const RiderDeliveries = () => {
                                 </p>
                               </div>
                               {hasVendorLoc && o.status === "dispatched" && (
-                                <Button size="sm" variant="default" className="gap-1 shrink-0" onClick={() => openGoogleMaps(vendor.latitude, vendor.longitude)}>
-                                  <Navigation className="h-3.5 w-3.5" /> Navigate
-                                </Button>
+                                <div className="flex gap-1 shrink-0">
+                                  <Button size="sm" variant="default" className="gap-1" onClick={() => openNavigation(vendor.latitude, vendor.longitude)}>
+                                    <Navigation className="h-3.5 w-3.5" /> Navigate
+                                  </Button>
+                                  <Button size="sm" variant="outline" className="px-2" onClick={() => copyLocation(vendor.latitude, vendor.longitude, "Vendor")}>
+                                    <Copy className="h-3.5 w-3.5" />
+                                  </Button>
+                                </div>
                               )}
                             </div>
 
