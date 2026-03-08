@@ -22,6 +22,8 @@ import VendorProducts from "./pages/vendor/VendorProducts";
 import VendorStockUpdate from "./pages/vendor/VendorStockUpdate";
 import VendorOrders from "./pages/vendor/VendorOrders";
 import VendorSales from "./pages/vendor/VendorSales";
+import VendorFeedback from "./pages/vendor/VendorFeedback";
+import AdminFeedback from "./pages/admin/AdminFeedback";
 import RiderDashboard from "./pages/rider/RiderDashboard";
 import RiderDeliveries from "./pages/rider/RiderDeliveries";
 import RiderEarnings from "./pages/rider/RiderEarnings";
