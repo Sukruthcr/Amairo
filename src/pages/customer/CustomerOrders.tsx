@@ -27,7 +27,14 @@ const statusConfig: Record<string, { label: string; icon: React.ElementType; col
 const CustomerOrders = () => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
+  const { toast } = useToast();
   const [recentlyUpdated, setRecentlyUpdated] = useState<string | null>(null);
+  const [feedbackOpen, setFeedbackOpen] = useState<string | null>(null);
+  const [rating, setRating] = useState(5);
+  const [productFeedback, setProductFeedback] = useState("");
+  const [deliveryFeedback, setDeliveryFeedback] = useState("");
+  const [hasFault, setHasFault] = useState(false);
+  const [faultDescription, setFaultDescription] = useState("");
 
   const { data: orders = [], isLoading } = useQuery({
     queryKey: ["customer-orders", user?.id],
