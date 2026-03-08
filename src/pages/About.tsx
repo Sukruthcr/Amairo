@@ -40,7 +40,7 @@ const About = () => {
       <section className="container py-20 md:py-28">
         <motion.div initial="hidden" animate="visible" className="max-w-3xl mx-auto text-center">
           <motion.h1 variants={fadeUp} custom={0} className="text-4xl md:text-5xl font-bold mb-6">
-            About <span className="text-primary">Smart Delivery Hub</span>
+            About <span className="text-primary">Amairo</span>
           </motion.h1>
           <motion.p variants={fadeUp} custom={1} className="text-lg text-muted-foreground leading-relaxed">
             We're on a mission to bridge the gap between local shops and customers by building a reliable, tech-driven delivery ecosystem that benefits everyone — vendors, riders, and customers alike.
