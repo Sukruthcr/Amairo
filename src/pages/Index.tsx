@@ -188,7 +188,7 @@ const Index = () => {
         >
           <h2 className="text-3xl md:text-4xl font-bold mb-4">Ready to Join?</h2>
           <p className="opacity-90 max-w-xl mx-auto mb-8">
-            Whether you're a vendor, rider, or customer — Smart Delivery Hub has a place for you.
+            Whether you're a vendor, rider, or customer — Amairo has a place for you.
           </p>
           <div className="flex flex-wrap gap-4 justify-center">
             <Link to="/contact">

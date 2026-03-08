@@ -80,7 +80,7 @@ const About = () => {
       <section className="container py-20">
         <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} className="text-center mb-14">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">Meet the Team</h2>
-          <p className="text-muted-foreground">The people behind Smart Delivery Hub.</p>
+          <p className="text-muted-foreground">The people behind Amairo.</p>
         </motion.div>
         <div className="grid md:grid-cols-2 gap-8 max-w-3xl mx-auto">
           {founders.map((f, i) => (
