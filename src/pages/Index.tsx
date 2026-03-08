@@ -195,7 +195,7 @@ const Index = () => {
               <Button size="lg" variant="secondary">Join as Vendor</Button>
             </Link>
             <Link to="/contact">
-              <Button size="lg" variant="outline" className="border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10">
+              <Button size="lg" variant="outline" className="border-primary-foreground text-primary-foreground bg-primary-foreground/15 hover:bg-primary-foreground/25 font-semibold">
                 Become a Rider
               </Button>
             </Link>
