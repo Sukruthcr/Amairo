@@ -132,6 +132,7 @@ export type Database = {
           customer_lng: number | null
           delivery_address: string | null
           id: string
+          payment_method: string
           rider_id: string | null
           status: string
           total: number
@@ -145,6 +146,7 @@ export type Database = {
           customer_lng?: number | null
           delivery_address?: string | null
           id?: string
+          payment_method?: string
           rider_id?: string | null
           status?: string
           total?: number
@@ -158,6 +160,7 @@ export type Database = {
           customer_lng?: number | null
           delivery_address?: string | null
           id?: string
+          payment_method?: string
           rider_id?: string | null
           status?: string
           total?: number
