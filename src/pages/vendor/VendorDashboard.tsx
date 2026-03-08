@@ -7,10 +7,11 @@ import { motion } from "framer-motion";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
-import { Store, Package, TrendingUp, ClipboardCheck, ShoppingCart, BarChart3, MapPin, Locate, MessageSquare, Star, Home, User, Phone, FileText } from "lucide-react";
+import { Store, Package, TrendingUp, ClipboardCheck, ShoppingCart, BarChart3, MapPin, Locate, MessageSquare, Star, Home, User, Phone, FileText, Pencil, X, Plus, Upload, Camera } from "lucide-react";
+import VendorProfileCard from "@/components/VendorProfileCard";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { useState } from "react";
+import { useState, useRef } from "react";
 
 const VendorDashboard = () => {
   const { user } = useAuth();
@@ -188,55 +189,7 @@ const VendorDashboard = () => {
         </motion.div>
 
         {/* Profile Card */}
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.03 }} className="mb-6">
-          <Card>
-            <CardContent className="pt-5 pb-5">
-              <div className="flex items-center gap-4 mb-4">
-                <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                  <User className="h-6 w-6 text-primary" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="font-semibold text-lg truncate">{profile?.full_name || "—"}</p>
-                  <Badge variant={profile?.approval_status === "approved" ? "default" : "secondary"} className="text-[10px]">
-                    {profile?.approval_status || "pending"}
-                  </Badge>
-                </div>
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
-                {profile?.shop_name && (
-                  <div className="flex items-center gap-2 text-muted-foreground">
-                    <Store className="h-3.5 w-3.5 shrink-0" />
-                    <span className="truncate">{profile.shop_name}</span>
-                  </div>
-                )}
-                {profile?.phone && (
-                  <div className="flex items-center gap-2 text-muted-foreground">
-                    <Phone className="h-3.5 w-3.5 shrink-0" />
-                    <span>{profile.phone}</span>
-                  </div>
-                )}
-                {profile?.gst_number && (
-                  <div className="flex items-center gap-2 text-muted-foreground">
-                    <FileText className="h-3.5 w-3.5 shrink-0" />
-                    <span>GST: {profile.gst_number}</span>
-                  </div>
-                )}
-                {profile?.shop_address && (
-                  <div className="flex items-center gap-2 text-muted-foreground">
-                    <MapPin className="h-3.5 w-3.5 shrink-0" />
-                    <span className="truncate">{profile.shop_address}</span>
-                  </div>
-                )}
-                {user?.email && (
-                  <div className="flex items-center gap-2 text-muted-foreground">
-                    <MessageSquare className="h-3.5 w-3.5 shrink-0" />
-                    <span className="truncate">{user.email}</span>
-                  </div>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-        </motion.div>
+        <VendorProfileCard profile={profile} user={user} refetchProfile={refetchProfile} toast={toast} />
 
         {/* Shop Location Banner */}
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }} className="mb-6">
