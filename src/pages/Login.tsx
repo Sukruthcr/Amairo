@@ -139,12 +139,10 @@ const Login = () => {
             transition={{ duration: 0.6 }}
           >
             <h1 className="text-4xl xl:text-5xl font-display font-bold text-primary-foreground leading-tight">
-              Smart Delivery
-              <br />
-              <span className="text-primary-foreground/80">Hub</span>
+              Amairo
             </h1>
             <p className="mt-4 text-primary-foreground/70 text-lg max-w-md font-body">
-              Your one-stop platform connecting local vendors, reliable riders, and happy customers.
+              Everything you need, one place. Connecting local vendors, reliable riders, and happy customers.
             </p>
           </motion.div>
 
