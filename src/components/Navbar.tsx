@@ -34,6 +34,12 @@ const riderLinks = [
   { to: "/rider/earnings", label: "Earnings" },
 ];
 
+const customerLinks = [
+  { to: "/customer/shop", label: "Shop" },
+  { to: "/customer/cart", label: "Cart" },
+  { to: "/customer/orders", label: "My Orders" },
+];
+
 const Navbar = () => {
   const [open, setOpen] = useState(false);
   const location = useLocation();
