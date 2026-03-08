@@ -53,6 +53,8 @@ const Navbar = () => {
     navLinks = vendorLinks;
   } else if (role === "rider") {
     navLinks = riderLinks;
+  } else if (role === "customer") {
+    navLinks = customerLinks;
   }
 
   return (
