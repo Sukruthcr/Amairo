@@ -10,7 +10,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ShoppingCart, Minus, Plus, Trash2, ImageIcon } from "lucide-react";
+import { ShoppingCart, Minus, Plus, Trash2, ImageIcon, MapPin, Locate } from "lucide-react";
 import { useState } from "react";
 
 const CustomerCart = () => {
@@ -20,6 +20,30 @@ const CustomerCart = () => {
   const navigate = useNavigate();
   const [address, setAddress] = useState("");
   const [placing, setPlacing] = useState(false);
+  const [customerLat, setCustomerLat] = useState<number | null>(null);
+  const [customerLng, setCustomerLng] = useState<number | null>(null);
+  const [locating, setLocating] = useState(false);
+
+  const getLocation = () => {
+    if (!navigator.geolocation) {
+      toast({ title: "Geolocation not supported", variant: "destructive" });
+      return;
+    }
+    setLocating(true);
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setCustomerLat(pos.coords.latitude);
+        setCustomerLng(pos.coords.longitude);
+        setLocating(false);
+        toast({ title: "📍 Location captured!" });
+      },
+      (err) => {
+        setLocating(false);
+        toast({ title: "Location access denied", description: "Please enable location access and try again", variant: "destructive" });
+      },
+      { enableHighAccuracy: true }
+    );
+  };
 
   const placeOrder = async () => {
     if (!user || items.length === 0) return;
@@ -27,10 +51,13 @@ const CustomerCart = () => {
       toast({ title: "Please enter delivery address", variant: "destructive" });
       return;
     }
+    if (!customerLat || !customerLng) {
+      toast({ title: "Please share your location", description: "Tap 'Use My Location' so the rider can navigate to you", variant: "destructive" });
+      return;
+    }
     setPlacing(true);
 
     try {
-      // Group items by vendor
       const byVendor: Record<string, typeof items> = {};
       items.forEach((item) => {
         if (!byVendor[item.vendor_id]) byVendor[item.vendor_id] = [];
@@ -47,6 +74,8 @@ const CustomerCart = () => {
             total: orderTotal,
             delivery_address: address.trim(),
             status: "pending",
+            customer_lat: customerLat,
+            customer_lng: customerLng,
           })
           .select("id")
           .single();
@@ -134,6 +163,28 @@ const CustomerCart = () => {
                     required
                   />
                 </div>
+
+                <div>
+                  <Label>Your Location</Label>
+                  <div className="mt-1.5">
+                    {customerLat && customerLng ? (
+                      <div className="flex items-center gap-2 p-3 rounded-md bg-primary/10 border border-primary/20">
+                        <MapPin className="h-4 w-4 text-primary shrink-0" />
+                        <span className="text-sm text-primary font-medium">Location captured ✓</span>
+                        <Button size="sm" variant="ghost" className="ml-auto text-xs" onClick={getLocation}>
+                          Update
+                        </Button>
+                      </div>
+                    ) : (
+                      <Button variant="outline" className="w-full gap-2" onClick={getLocation} disabled={locating}>
+                        <Locate className={`h-4 w-4 ${locating ? "animate-spin" : ""}`} />
+                        {locating ? "Getting location..." : "Use My Location"}
+                      </Button>
+                    )}
+                    <p className="text-[11px] text-muted-foreground mt-1">Required so the rider can navigate to your location</p>
+                  </div>
+                </div>
+
                 <div className="flex items-center justify-between pt-2 border-t border-border">
                   <span className="font-medium">Total</span>
                   <span className="text-xl font-display font-bold">₹{total.toFixed(0)}</span>
