@@ -133,31 +133,52 @@ export type Database = {
       }
       profiles: {
         Row: {
+          approval_status: string
           avatar_url: string | null
           created_at: string
+          dl_number: string | null
           full_name: string | null
+          gst_number: string | null
           id: string
+          pan_number: string | null
           phone: string | null
+          rejection_reason: string | null
+          shop_name: string | null
           updated_at: string
           user_id: string
+          vehicle_details: string | null
         }
         Insert: {
+          approval_status?: string
           avatar_url?: string | null
           created_at?: string
+          dl_number?: string | null
           full_name?: string | null
+          gst_number?: string | null
           id?: string
+          pan_number?: string | null
           phone?: string | null
+          rejection_reason?: string | null
+          shop_name?: string | null
           updated_at?: string
           user_id: string
+          vehicle_details?: string | null
         }
         Update: {
+          approval_status?: string
           avatar_url?: string | null
           created_at?: string
+          dl_number?: string | null
           full_name?: string | null
+          gst_number?: string | null
           id?: string
+          pan_number?: string | null
           phone?: string | null
+          rejection_reason?: string | null
+          shop_name?: string | null
           updated_at?: string
           user_id?: string
+          vehicle_details?: string | null
         }
         Relationships: []
       }
