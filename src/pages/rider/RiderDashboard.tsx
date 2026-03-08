@@ -120,55 +120,7 @@ const RiderDashboard = () => {
         </motion.div>
 
         {/* Profile Card */}
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.03 }} className="mb-8">
-          <Card>
-            <CardContent className="pt-5 pb-5">
-              <div className="flex items-center gap-4 mb-4">
-                <div className="h-12 w-12 rounded-full bg-secondary/10 flex items-center justify-center shrink-0">
-                  <User className="h-6 w-6 text-secondary" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="font-semibold text-lg truncate">{profile?.full_name || "—"}</p>
-                  <Badge variant={profile?.approval_status === "approved" ? "default" : "secondary"} className="text-[10px]">
-                    {profile?.approval_status || "pending"}
-                  </Badge>
-                </div>
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
-                {profile?.phone && (
-                  <div className="flex items-center gap-2 text-muted-foreground">
-                    <Phone className="h-3.5 w-3.5 shrink-0" />
-                    <span>{profile.phone}</span>
-                  </div>
-                )}
-                {user?.email && (
-                  <div className="flex items-center gap-2 text-muted-foreground">
-                    <Bike className="h-3.5 w-3.5 shrink-0" />
-                    <span className="truncate">{user.email}</span>
-                  </div>
-                )}
-                {profile?.dl_number && (
-                  <div className="flex items-center gap-2 text-muted-foreground">
-                    <FileText className="h-3.5 w-3.5 shrink-0" />
-                    <span>DL: {profile.dl_number}</span>
-                  </div>
-                )}
-                {profile?.pan_number && (
-                  <div className="flex items-center gap-2 text-muted-foreground">
-                    <FileText className="h-3.5 w-3.5 shrink-0" />
-                    <span>PAN: {profile.pan_number}</span>
-                  </div>
-                )}
-                {profile?.vehicle_details && (
-                  <div className="flex items-center gap-2 text-muted-foreground">
-                    <Car className="h-3.5 w-3.5 shrink-0" />
-                    <span>{profile.vehicle_details}</span>
-                  </div>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-        </motion.div>
+        <RiderProfileCard profile={profile} user={user} refetchProfile={refetchProfile} toast={toast} />
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
           {stats.map((s, i) => (
