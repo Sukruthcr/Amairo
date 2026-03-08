@@ -50,6 +50,40 @@ const CustomerOrders = () => {
     enabled: !!user,
   });
 
+  const { data: feedbacks = [] } = useQuery({
+    queryKey: ["customer-feedbacks", user?.id],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("order_feedback")
+        .select("order_id")
+        .eq("customer_id", user!.id);
+      return data?.map((f: any) => f.order_id) || [];
+    },
+    enabled: !!user,
+  });
+
+  const submitFeedback = useMutation({
+    mutationFn: async (orderId: string) => {
+      const { error } = await supabase.from("order_feedback").insert({
+        order_id: orderId,
+        customer_id: user!.id,
+        rating,
+        product_feedback: productFeedback.trim() || null,
+        delivery_feedback: deliveryFeedback.trim() || null,
+        has_fault: hasFault,
+        fault_description: hasFault ? faultDescription.trim() || null : null,
+      });
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast({ title: "✅ Feedback submitted!" });
+      queryClient.invalidateQueries({ queryKey: ["customer-feedbacks"] });
+      setFeedbackOpen(null);
+      setRating(5); setProductFeedback(""); setDeliveryFeedback(""); setHasFault(false); setFaultDescription("");
+    },
+    onError: (e: any) => toast({ title: "Error", description: e.message, variant: "destructive" }),
+  });
+
   useEffect(() => {
     if (!user) return;
     const channel = supabase
