@@ -180,6 +180,25 @@ const CustomerOrders = () => {
                           </Badge>
                         </div>
 
+                        {/* Estimated Delivery Time */}
+                        {(() => {
+                          const eta = getEstimatedTime(o);
+                          if (!eta) return null;
+                          return (
+                            <div className="mb-4 p-2.5 rounded-lg bg-accent/50 border border-accent flex items-center gap-2">
+                              <Hourglass className="h-4 w-4 text-primary shrink-0 animate-pulse" />
+                              <div className="flex-1">
+                                <p className="text-sm font-medium">
+                                  ~{eta.remainingMinutes} min remaining
+                                </p>
+                                <p className="text-[11px] text-muted-foreground">
+                                  ETA: {eta.etaTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                </p>
+                              </div>
+                            </div>
+                          );
+                        })()}
+
                         {/* Step tracker */}
                         {!isRejected && (
                           <div className="mb-4">
