@@ -10,7 +10,7 @@ const Footer = () => {
           <div className="md:col-span-1">
             <div className="flex items-center gap-2 font-display text-lg font-bold mb-4">
               <Truck className="h-5 w-5" />
-              Smart Delivery Hub
+              Amairo
             </div>
             <p className="text-sm opacity-70 leading-relaxed">
               Connecting vendors, customers, and riders in one seamless delivery ecosystem.
