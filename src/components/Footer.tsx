@@ -1,46 +1,57 @@
 import { Link } from "react-router-dom";
-import { Truck, Mail, Phone, MapPin } from "lucide-react";
+import { Truck, Mail, Phone, MapPin, Rocket, Calendar } from "lucide-react";
 
 const Footer = () => {
   return (
     <footer className="bg-foreground text-background">
       <div className="container py-16">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
-          {/* Brand */}
-          <div className="md:col-span-1">
-            <div className="flex items-center gap-2 font-display text-lg font-bold mb-4">
-              <Truck className="h-5 w-5" />
-              Amairo
-            </div>
-            <p className="text-sm opacity-70 leading-relaxed">
-              Connecting vendors, customers, and riders in one seamless delivery ecosystem.
-            </p>
+        {/* Top tagline */}
+        <div className="mb-12 pb-8 border-b border-background/10">
+          <div className="flex items-center gap-2 font-display text-2xl font-bold mb-2">
+            <Truck className="h-6 w-6" />
+            Amairo
           </div>
+          <p className="text-sm opacity-70 max-w-md leading-relaxed">
+            Delivering happiness across Bangalore in 3 hours or less. Launching July 2026.
+          </p>
+          <span className="inline-block mt-3 px-3 py-1 text-xs font-semibold uppercase tracking-wider rounded-full bg-accent/20 text-accent">
+            Bangalore Exclusive
+          </span>
+        </div>
 
-          {/* Quick Links */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-10">
+          {/* Company */}
           <div>
-            <h4 className="font-display font-semibold mb-4 text-sm uppercase tracking-wider opacity-60">Quick Links</h4>
+            <h4 className="font-display font-semibold mb-4 text-sm uppercase tracking-wider opacity-60">Company</h4>
             <div className="flex flex-col gap-2">
               {[
-                { to: "/", label: "Home" },
-                { to: "/about", label: "About Us" },
-                { to: "/stats", label: "Statistics" },
-                { to: "/contact", label: "Contact" },
-              ].map((link) => (
-                <Link key={link.to} to={link.to} className="text-sm opacity-70 hover:opacity-100 transition-opacity">
+                { to: "/about", label: "Our Mission" },
+                { to: "/about", label: "Ecosystem" },
+                { to: "/about", label: "Leadership" },
+                { to: "/stats", label: "Products" },
+                { to: "/about", label: "Bangalore Areas" },
+              ].map((link, i) => (
+                <Link key={i} to={link.to} className="text-sm opacity-70 hover:opacity-100 transition-opacity">
                   {link.label}
                 </Link>
               ))}
             </div>
           </div>
 
-          {/* Join Us */}
+          {/* For You */}
           <div>
-            <h4 className="font-display font-semibold mb-4 text-sm uppercase tracking-wider opacity-60">Join Us</h4>
-            <div className="flex flex-col gap-2 text-sm opacity-70">
-              <span>Become a Vendor</span>
-              <span>Become a Rider</span>
-              <span>Order as Customer</span>
+            <h4 className="font-display font-semibold mb-4 text-sm uppercase tracking-wider opacity-60">For You</h4>
+            <div className="flex flex-col gap-2">
+              {[
+                { to: "/login", label: "Customer App" },
+                { to: "/login", label: "Vendor App" },
+                { to: "/login", label: "Rider App" },
+                { to: "/contact", label: "Join Waitlist" },
+              ].map((link, i) => (
+                <Link key={i} to={link.to} className="text-sm opacity-70 hover:opacity-100 transition-opacity">
+                  {link.label}
+                </Link>
+              ))}
             </div>
           </div>
 
@@ -50,7 +61,7 @@ const Footer = () => {
             <div className="flex flex-col gap-3 text-sm opacity-70">
               <div className="flex items-center gap-2">
                 <Mail className="h-4 w-4 shrink-0" />
-                hello@smartdeliveryhub.com
+                hello@amairo.in
               </div>
               <div className="flex items-center gap-2">
                 <Phone className="h-4 w-4 shrink-0" />
@@ -58,14 +69,28 @@ const Footer = () => {
               </div>
               <div className="flex items-center gap-2">
                 <MapPin className="h-4 w-4 shrink-0" />
-                India
+                Bangalore, India
               </div>
+              <div className="flex items-center gap-2">
+                <Calendar className="h-4 w-4 shrink-0" />
+                Launch: July 2026
+              </div>
+            </div>
+          </div>
+
+          {/* Launch Banner */}
+          <div className="flex flex-col justify-between">
+            <div className="p-5 rounded-xl bg-primary/15 border border-primary/20">
+              <Rocket className="h-5 w-5 text-primary mb-2" />
+              <p className="font-display font-bold text-sm text-primary">Launching exclusively in Bangalore</p>
+              <p className="text-xs opacity-70 mt-1">July 2026 — be the first to experience Amairo.</p>
             </div>
           </div>
         </div>
 
         <div className="border-t border-background/10 mt-12 pt-8 text-center text-sm opacity-50">
-          © {new Date().getFullYear()} Amairo. All rights reserved.
+          <p>© 2025 Amairo Technologies Pvt. Ltd. All rights reserved.</p>
+          <p className="mt-1 text-xs">Currently in development phase. Launching exclusively in Bangalore in July 2026.</p>
         </div>
       </div>
     </footer>
