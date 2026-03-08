@@ -9,6 +9,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { Bike, Package, MapPin, IndianRupee, ClipboardList, BarChart3, Bell, User, Phone, FileText, Car } from "lucide-react";
 import { useEffect } from "react";
+import RiderProfileCard from "@/components/RiderProfileCard";
 
 const RiderDashboard = () => {
   const { user } = useAuth();
