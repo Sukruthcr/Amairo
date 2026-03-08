@@ -98,8 +98,9 @@ const RiderDeliveries = () => {
     onError: (e: any) => toast({ title: "Error", description: e.message, variant: "destructive" }),
   });
 
-  const openGoogleMaps = (lat: number, lng: number, label: string) => {
-    window.open(`https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`, "_blank");
+  const openGoogleMaps = (destLat: number, destLng: number) => {
+    const origin = riderLat && riderLng ? `&origin=${riderLat},${riderLng}` : "";
+    window.open(`https://www.google.com/maps/dir/?api=1&destination=${destLat},${destLng}${origin}&travelmode=driving`, "_blank");
   };
 
   const active = deliveries.filter((d: any) => d.status !== "delivered");
