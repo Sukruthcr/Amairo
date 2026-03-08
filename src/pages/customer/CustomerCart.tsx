@@ -166,22 +166,34 @@ const CustomerCart = () => {
 
                 <div>
                   <Label>Your Location</Label>
-                  <div className="mt-1.5">
-                    {customerLat && customerLng ? (
-                      <div className="flex items-center gap-2 p-3 rounded-md bg-primary/10 border border-primary/20">
+                  <div className="mt-1.5 space-y-2">
+                    <Button variant="outline" className="w-full gap-2" onClick={getLocation} disabled={locating}>
+                      <Locate className={`h-4 w-4 ${locating ? "animate-spin" : ""}`} />
+                      {locating ? "Getting location..." : customerLat ? "📍 Update My Location" : "📍 Use My Location"}
+                    </Button>
+                    {customerLat && customerLng && (
+                      <div className="flex items-center gap-2 p-2 rounded-md bg-primary/10 border border-primary/20">
                         <MapPin className="h-4 w-4 text-primary shrink-0" />
-                        <span className="text-sm text-primary font-medium">Location captured ✓</span>
-                        <Button size="sm" variant="ghost" className="ml-auto text-xs" onClick={getLocation}>
-                          Update
-                        </Button>
+                        <span className="text-xs text-primary font-medium">GPS: {customerLat.toFixed(5)}, {customerLng.toFixed(5)} ✓</span>
                       </div>
-                    ) : (
-                      <Button variant="outline" className="w-full gap-2" onClick={getLocation} disabled={locating}>
-                        <Locate className={`h-4 w-4 ${locating ? "animate-spin" : ""}`} />
-                        {locating ? "Getting location..." : "Use My Location"}
-                      </Button>
                     )}
-                    <p className="text-[11px] text-muted-foreground mt-1">Required so the rider can navigate to your location</p>
+                    <p className="text-[11px] text-muted-foreground">Or enter coordinates manually:</p>
+                    <div className="grid grid-cols-2 gap-2">
+                      <Input
+                        type="number"
+                        step="any"
+                        placeholder="Latitude"
+                        value={customerLat ?? ""}
+                        onChange={(e) => setCustomerLat(e.target.value ? parseFloat(e.target.value) : null)}
+                      />
+                      <Input
+                        type="number"
+                        step="any"
+                        placeholder="Longitude"
+                        value={customerLng ?? ""}
+                        onChange={(e) => setCustomerLng(e.target.value ? parseFloat(e.target.value) : null)}
+                      />
+                    </div>
                   </div>
                 </div>
 
