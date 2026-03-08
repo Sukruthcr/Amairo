@@ -43,6 +43,19 @@ const RiderDashboard = () => {
     return () => { supabase.removeChannel(channel); };
   }, [user, queryClient, toast]);
 
+  const { data: profile } = useQuery({
+    queryKey: ["rider-profile", user?.id],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("profiles")
+        .select("full_name, phone, dl_number, pan_number, vehicle_details, approval_status")
+        .eq("user_id", user!.id)
+        .single();
+      return data;
+    },
+    enabled: !!user,
+  });
+
   const { data: todayDeliveries = 0 } = useQuery({
     queryKey: ["rider-dash-deliveries", user?.id],
     queryFn: async () => {
