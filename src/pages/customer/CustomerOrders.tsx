@@ -227,6 +227,59 @@ const CustomerOrders = () => {
                           )}
                           <p className="font-display font-bold">₹{Number(o.total).toFixed(0)}</p>
                         </div>
+
+                        {/* Feedback */}
+                        {o.status === "delivered" && !feedbacks.includes(o.id) && (
+                          <div className="mt-3 pt-3 border-t border-border">
+                            {feedbackOpen === o.id ? (
+                              <div className="space-y-3">
+                                <div>
+                                  <Label className="text-xs">Rating</Label>
+                                  <div className="flex gap-1 mt-1">
+                                    {[1,2,3,4,5].map(s => (
+                                      <button key={s} onClick={() => setRating(s)} className="focus:outline-none">
+                                        <Star className={`h-5 w-5 ${s <= rating ? "text-yellow-500 fill-yellow-500" : "text-muted-foreground/30"}`} />
+                                      </button>
+                                    ))}
+                                  </div>
+                                </div>
+                                <div>
+                                  <Label className="text-xs">Product Feedback</Label>
+                                  <Textarea value={productFeedback} onChange={e => setProductFeedback(e.target.value)} placeholder="How was the product quality?" className="mt-1 min-h-[60px]" maxLength={500} />
+                                </div>
+                                <div>
+                                  <Label className="text-xs">Delivery Feedback</Label>
+                                  <Textarea value={deliveryFeedback} onChange={e => setDeliveryFeedback(e.target.value)} placeholder="How was the delivery?" className="mt-1 min-h-[60px]" maxLength={500} />
+                                </div>
+                                <div className="flex items-center gap-3">
+                                  <Switch checked={hasFault} onCheckedChange={setHasFault} />
+                                  <Label className="text-xs flex items-center gap-1"><AlertTriangle className="h-3 w-3 text-destructive" /> Report a fault</Label>
+                                </div>
+                                {hasFault && (
+                                  <div>
+                                    <Label className="text-xs">Describe the fault</Label>
+                                    <Textarea value={faultDescription} onChange={e => setFaultDescription(e.target.value)} placeholder="What's wrong with the product?" className="mt-1 min-h-[60px]" maxLength={500} />
+                                  </div>
+                                )}
+                                <div className="flex gap-2">
+                                  <Button size="sm" onClick={() => submitFeedback.mutate(o.id)} disabled={submitFeedback.isPending}>
+                                    {submitFeedback.isPending ? "Submitting..." : "Submit Feedback"}
+                                  </Button>
+                                  <Button size="sm" variant="ghost" onClick={() => setFeedbackOpen(null)}>Cancel</Button>
+                                </div>
+                              </div>
+                            ) : (
+                              <Button size="sm" variant="outline" className="gap-1 w-full" onClick={() => setFeedbackOpen(o.id)}>
+                                <MessageSquare className="h-3.5 w-3.5" /> Give Feedback
+                              </Button>
+                            )}
+                          </div>
+                        )}
+                        {feedbacks.includes(o.id) && (
+                          <div className="mt-3 pt-3 border-t border-border">
+                            <p className="text-xs text-muted-foreground flex items-center gap-1"><CheckCircle2 className="h-3 w-3 text-primary" /> Feedback submitted</p>
+                          </div>
+                        )}
                       </CardContent>
                     </Card>
                   </motion.div>
