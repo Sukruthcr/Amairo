@@ -1,12 +1,17 @@
 import Layout from "@/components/Layout";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
-import { Package, MapPin, Clock, CheckCircle2, Circle, Truck, ChefHat, PackageCheck, Timer, XCircle, Dot } from "lucide-react";
+import { Package, MapPin, Clock, CheckCircle2, Circle, Truck, ChefHat, PackageCheck, Timer, XCircle, Star, MessageSquare, AlertTriangle } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useToast } from "@/hooks/use-toast";
 
 const statusSteps = ["pending", "accepted", "preparing", "dispatched", "picked_up", "delivered"];
 const statusConfig: Record<string, { label: string; icon: React.ElementType; color: string }> = {
@@ -22,7 +27,14 @@ const statusConfig: Record<string, { label: string; icon: React.ElementType; col
 const CustomerOrders = () => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
+  const { toast } = useToast();
   const [recentlyUpdated, setRecentlyUpdated] = useState<string | null>(null);
+  const [feedbackOpen, setFeedbackOpen] = useState<string | null>(null);
+  const [rating, setRating] = useState(5);
+  const [productFeedback, setProductFeedback] = useState("");
+  const [deliveryFeedback, setDeliveryFeedback] = useState("");
+  const [hasFault, setHasFault] = useState(false);
+  const [faultDescription, setFaultDescription] = useState("");
 
   const { data: orders = [], isLoading } = useQuery({
     queryKey: ["customer-orders", user?.id],
@@ -36,6 +48,40 @@ const CustomerOrders = () => {
       return data;
     },
     enabled: !!user,
+  });
+
+  const { data: feedbacks = [] } = useQuery({
+    queryKey: ["customer-feedbacks", user?.id],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("order_feedback")
+        .select("order_id")
+        .eq("customer_id", user!.id);
+      return data?.map((f: any) => f.order_id) || [];
+    },
+    enabled: !!user,
+  });
+
+  const submitFeedback = useMutation({
+    mutationFn: async (orderId: string) => {
+      const { error } = await supabase.from("order_feedback").insert({
+        order_id: orderId,
+        customer_id: user!.id,
+        rating,
+        product_feedback: productFeedback.trim() || null,
+        delivery_feedback: deliveryFeedback.trim() || null,
+        has_fault: hasFault,
+        fault_description: hasFault ? faultDescription.trim() || null : null,
+      });
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast({ title: "✅ Feedback submitted!" });
+      queryClient.invalidateQueries({ queryKey: ["customer-feedbacks"] });
+      setFeedbackOpen(null);
+      setRating(5); setProductFeedback(""); setDeliveryFeedback(""); setHasFault(false); setFaultDescription("");
+    },
+    onError: (e: any) => toast({ title: "Error", description: e.message, variant: "destructive" }),
   });
 
   useEffect(() => {
@@ -181,6 +227,59 @@ const CustomerOrders = () => {
                           )}
                           <p className="font-display font-bold">₹{Number(o.total).toFixed(0)}</p>
                         </div>
+
+                        {/* Feedback */}
+                        {o.status === "delivered" && !feedbacks.includes(o.id) && (
+                          <div className="mt-3 pt-3 border-t border-border">
+                            {feedbackOpen === o.id ? (
+                              <div className="space-y-3">
+                                <div>
+                                  <Label className="text-xs">Rating</Label>
+                                  <div className="flex gap-1 mt-1">
+                                    {[1,2,3,4,5].map(s => (
+                                      <button key={s} onClick={() => setRating(s)} className="focus:outline-none">
+                                        <Star className={`h-5 w-5 ${s <= rating ? "text-yellow-500 fill-yellow-500" : "text-muted-foreground/30"}`} />
+                                      </button>
+                                    ))}
+                                  </div>
+                                </div>
+                                <div>
+                                  <Label className="text-xs">Product Feedback</Label>
+                                  <Textarea value={productFeedback} onChange={e => setProductFeedback(e.target.value)} placeholder="How was the product quality?" className="mt-1 min-h-[60px]" maxLength={500} />
+                                </div>
+                                <div>
+                                  <Label className="text-xs">Delivery Feedback</Label>
+                                  <Textarea value={deliveryFeedback} onChange={e => setDeliveryFeedback(e.target.value)} placeholder="How was the delivery?" className="mt-1 min-h-[60px]" maxLength={500} />
+                                </div>
+                                <div className="flex items-center gap-3">
+                                  <Switch checked={hasFault} onCheckedChange={setHasFault} />
+                                  <Label className="text-xs flex items-center gap-1"><AlertTriangle className="h-3 w-3 text-destructive" /> Report a fault</Label>
+                                </div>
+                                {hasFault && (
+                                  <div>
+                                    <Label className="text-xs">Describe the fault</Label>
+                                    <Textarea value={faultDescription} onChange={e => setFaultDescription(e.target.value)} placeholder="What's wrong with the product?" className="mt-1 min-h-[60px]" maxLength={500} />
+                                  </div>
+                                )}
+                                <div className="flex gap-2">
+                                  <Button size="sm" onClick={() => submitFeedback.mutate(o.id)} disabled={submitFeedback.isPending}>
+                                    {submitFeedback.isPending ? "Submitting..." : "Submit Feedback"}
+                                  </Button>
+                                  <Button size="sm" variant="ghost" onClick={() => setFeedbackOpen(null)}>Cancel</Button>
+                                </div>
+                              </div>
+                            ) : (
+                              <Button size="sm" variant="outline" className="gap-1 w-full" onClick={() => setFeedbackOpen(o.id)}>
+                                <MessageSquare className="h-3.5 w-3.5" /> Give Feedback
+                              </Button>
+                            )}
+                          </div>
+                        )}
+                        {feedbacks.includes(o.id) && (
+                          <div className="mt-3 pt-3 border-t border-border">
+                            <p className="text-xs text-muted-foreground flex items-center gap-1"><CheckCircle2 className="h-3 w-3 text-primary" /> Feedback submitted</p>
+                          </div>
+                        )}
                       </CardContent>
                     </Card>
                   </motion.div>

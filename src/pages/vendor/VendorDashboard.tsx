@@ -6,7 +6,8 @@ import { motion } from "framer-motion";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
-import { Store, Package, TrendingUp, ClipboardCheck, ShoppingCart, BarChart3, MapPin, Locate } from "lucide-react";
+import { Store, Package, TrendingUp, ClipboardCheck, ShoppingCart, BarChart3, MapPin, Locate, MessageSquare, Star } from "lucide-react";
+import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
 
@@ -14,6 +15,8 @@ const VendorDashboard = () => {
   const { user } = useAuth();
   const { toast } = useToast();
   const [savingLoc, setSavingLoc] = useState(false);
+  const [manualLat, setManualLat] = useState("");
+  const [manualLng, setManualLng] = useState("");
 
   const { data: profile, refetch: refetchProfile } = useQuery({
     queryKey: ["vendor-profile-loc", user?.id],
@@ -30,7 +33,7 @@ const VendorDashboard = () => {
 
   const saveShopLocation = () => {
     if (!navigator.geolocation) {
-      toast({ title: "Geolocation not supported", variant: "destructive" });
+      toast({ title: "Geolocation not supported, use manual entry", variant: "destructive" });
       return;
     }
     setSavingLoc(true);
@@ -50,10 +53,33 @@ const VendorDashboard = () => {
       },
       () => {
         setSavingLoc(false);
-        toast({ title: "Location access denied", variant: "destructive" });
+        toast({ title: "Location access denied — use manual entry below", variant: "destructive" });
       },
       { enableHighAccuracy: true }
     );
+  };
+
+  const saveManualLocation = async () => {
+    const lat = parseFloat(manualLat);
+    const lng = parseFloat(manualLng);
+    if (isNaN(lat) || isNaN(lng) || lat < -90 || lat > 90 || lng < -180 || lng > 180) {
+      toast({ title: "Invalid coordinates", description: "Latitude: -90 to 90, Longitude: -180 to 180", variant: "destructive" });
+      return;
+    }
+    setSavingLoc(true);
+    const { error } = await supabase
+      .from("profiles")
+      .update({ latitude: lat, longitude: lng })
+      .eq("user_id", user!.id);
+    setSavingLoc(false);
+    if (error) {
+      toast({ title: "Error saving location", variant: "destructive" });
+    } else {
+      toast({ title: "📍 Shop location saved!" });
+      setManualLat("");
+      setManualLng("");
+      refetchProfile();
+    }
   };
 
   const { data: productCount = 0 } = useQuery({
@@ -90,6 +116,28 @@ const VendorDashboard = () => {
         .eq("status", "delivered")
         .gte("created_at", weekAgo);
       return data?.reduce((s, o) => s + Number(o.total), 0) || 0;
+    },
+    enabled: !!user,
+  });
+
+  // Fetch recent feedback
+  const { data: recentFeedback = [] } = useQuery({
+    queryKey: ["vendor-feedback", user?.id],
+    queryFn: async () => {
+      // Get order IDs for this vendor
+      const { data: orders } = await supabase
+        .from("orders")
+        .select("id")
+        .eq("vendor_id", user!.id);
+      if (!orders || orders.length === 0) return [];
+      const orderIds = orders.map(o => o.id);
+      const { data } = await supabase
+        .from("order_feedback")
+        .select("*")
+        .in("order_id", orderIds)
+        .order("created_at", { ascending: false })
+        .limit(10);
+      return data || [];
     },
     enabled: !!user,
   });
@@ -132,9 +180,23 @@ const VendorDashboard = () => {
               </div>
               <Button size="sm" variant={profile?.latitude ? "outline" : "default"} className="gap-1 shrink-0" onClick={saveShopLocation} disabled={savingLoc}>
                 <Locate className={`h-3.5 w-3.5 ${savingLoc ? "animate-spin" : ""}`} />
-                {savingLoc ? "Saving..." : profile?.latitude ? "Update" : "Set Location"}
+                {savingLoc ? "Saving..." : profile?.latitude ? "Update" : "Auto Detect"}
               </Button>
             </CardContent>
+            {/* Manual entry */}
+            <div className="px-6 pb-5 pt-0">
+              <p className="text-xs text-muted-foreground mb-2">Or enter coordinates manually:</p>
+              <div className="flex gap-2">
+                <Input type="number" step="any" placeholder="Latitude" value={manualLat} onChange={(e) => setManualLat(e.target.value)} className="text-sm" />
+                <Input type="number" step="any" placeholder="Longitude" value={manualLng} onChange={(e) => setManualLng(e.target.value)} className="text-sm" />
+                <Button size="sm" onClick={saveManualLocation} disabled={savingLoc || !manualLat || !manualLng}>
+                  Save
+                </Button>
+              </div>
+              {profile?.latitude && profile?.longitude && (
+                <p className="text-xs text-muted-foreground mt-2">Current: {profile.latitude.toFixed(5)}, {profile.longitude.toFixed(5)}</p>
+              )}
+            </div>
           </Card>
         </motion.div>
 
@@ -171,6 +233,42 @@ const VendorDashboard = () => {
             </motion.div>
           ))}
         </div>
+
+        {/* Customer Feedback Section */}
+        {recentFeedback.length > 0 && (
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.7 }} className="mt-8">
+            <h2 className="text-lg font-semibold mb-3 flex items-center gap-2">
+              <MessageSquare className="h-5 w-5 text-primary" /> Customer Feedback
+            </h2>
+            <div className="space-y-3">
+              {recentFeedback.map((fb: any) => (
+                <Card key={fb.id} className={fb.has_fault ? "border-destructive/30" : ""}>
+                  <CardContent className="pt-4 pb-4">
+                    <div className="flex items-center gap-2 mb-2">
+                      <div className="flex">
+                        {[1,2,3,4,5].map(s => (
+                          <Star key={s} className={`h-3.5 w-3.5 ${s <= fb.rating ? "text-yellow-500 fill-yellow-500" : "text-muted-foreground/20"}`} />
+                        ))}
+                      </div>
+                      <span className="text-xs text-muted-foreground">#{fb.order_id.slice(0, 8)}</span>
+                      <span className="text-xs text-muted-foreground">{new Date(fb.created_at).toLocaleDateString()}</span>
+                      {fb.has_fault && (
+                        <span className="text-xs text-destructive font-medium flex items-center gap-1">⚠️ Fault reported</span>
+                      )}
+                    </div>
+                    {fb.product_feedback && <p className="text-sm mb-1"><span className="font-medium text-xs text-muted-foreground">Product:</span> {fb.product_feedback}</p>}
+                    {fb.delivery_feedback && <p className="text-sm mb-1"><span className="font-medium text-xs text-muted-foreground">Delivery:</span> {fb.delivery_feedback}</p>}
+                    {fb.has_fault && fb.fault_description && (
+                      <div className="mt-2 p-2 rounded bg-destructive/10 border border-destructive/20">
+                        <p className="text-sm text-destructive"><span className="font-medium">Fault:</span> {fb.fault_description}</p>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </motion.div>
+        )}
       </section>
     </Layout>
   );

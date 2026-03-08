@@ -8,7 +8,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { motion } from "framer-motion";
-import { Package, MapPin, CheckCircle, Truck, Navigation, Store, User, Locate } from "lucide-react";
+import { Package, MapPin, CheckCircle, Truck, Navigation, Store, User, Locate, Copy } from "lucide-react";
 import { useEffect, useState, useCallback } from "react";
 
 const statusFlow: Record<string, { next: string; label: string; icon: any }> = {
@@ -98,9 +98,27 @@ const RiderDeliveries = () => {
     onError: (e: any) => toast({ title: "Error", description: e.message, variant: "destructive" }),
   });
 
-  const openGoogleMaps = (destLat: number, destLng: number) => {
-    const origin = riderLat && riderLng ? `&origin=${riderLat},${riderLng}` : "";
-    window.open(`https://www.google.com/maps/dir/?api=1&destination=${destLat},${destLng}${origin}&travelmode=driving`, "_blank");
+  const openNavigation = (destLat: number, destLng: number) => {
+    // Use geo: URI which works on all devices and opens native map apps
+    // Falls back to intent-based URLs that won't be blocked by iframe
+    const origin = riderLat && riderLng ? `${riderLat},${riderLng}` : "";
+    
+    // Try multiple approaches for navigation
+    const googleMapsApp = `https://maps.google.com/maps?daddr=${destLat},${destLng}${origin ? `&saddr=${origin}` : ""}`;
+    const geoUri = `geo:${destLat},${destLng}?q=${destLat},${destLng}`;
+    
+    // Open in new tab - maps.google.com works better than www.google.com in iframes
+    const newWindow = window.open(googleMapsApp, "_blank");
+    if (!newWindow) {
+      // Fallback: try geo URI (works on mobile)
+      window.location.href = geoUri;
+    }
+  };
+
+  const copyLocation = (lat: number, lng: number, label: string) => {
+    navigator.clipboard.writeText(`${lat}, ${lng}`).then(() => {
+      toast({ title: `📋 ${label} coordinates copied!`, description: `${lat.toFixed(5)}, ${lng.toFixed(5)}` });
+    });
   };
 
   const active = deliveries.filter((d: any) => d.status !== "delivered");
@@ -189,9 +207,14 @@ const RiderDeliveries = () => {
                                 </p>
                               </div>
                               {hasVendorLoc && o.status === "dispatched" && (
-                                <Button size="sm" variant="default" className="gap-1 shrink-0" onClick={() => openGoogleMaps(vendor.latitude, vendor.longitude)}>
-                                  <Navigation className="h-3.5 w-3.5" /> Navigate
-                                </Button>
+                                <div className="flex gap-1 shrink-0">
+                                  <Button size="sm" variant="default" className="gap-1" onClick={() => openNavigation(vendor.latitude, vendor.longitude)}>
+                                    <Navigation className="h-3.5 w-3.5" /> Navigate
+                                  </Button>
+                                  <Button size="sm" variant="outline" className="px-2" onClick={() => copyLocation(vendor.latitude, vendor.longitude, "Vendor")}>
+                                    <Copy className="h-3.5 w-3.5" />
+                                  </Button>
+                                </div>
                               )}
                             </div>
 
@@ -207,9 +230,14 @@ const RiderDeliveries = () => {
                                 </p>
                               </div>
                               {hasCustomerLoc && o.status === "picked_up" && (
-                                <Button size="sm" variant="default" className="gap-1 shrink-0" onClick={() => openGoogleMaps(o.customer_lat, o.customer_lng)}>
-                                  <Navigation className="h-3.5 w-3.5" /> Navigate
-                                </Button>
+                                <div className="flex gap-1 shrink-0">
+                                  <Button size="sm" variant="default" className="gap-1" onClick={() => openNavigation(o.customer_lat, o.customer_lng)}>
+                                    <Navigation className="h-3.5 w-3.5" /> Navigate
+                                  </Button>
+                                  <Button size="sm" variant="outline" className="px-2" onClick={() => copyLocation(o.customer_lat, o.customer_lng, "Customer")}>
+                                    <Copy className="h-3.5 w-3.5" />
+                                  </Button>
+                                </div>
                               )}
                             </div>
                           </div>
