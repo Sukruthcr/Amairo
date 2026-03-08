@@ -175,6 +175,7 @@ const VendorDashboard = () => {
     { to: "/vendor/stock", label: "Daily Stock Update", icon: ClipboardCheck, desc: "Update today's available quantities" },
     { to: "/vendor/orders", label: "View Orders", icon: Package, desc: "Accept or reject incoming orders" },
     { to: "/vendor/sales", label: "Sales Summary", icon: BarChart3, desc: "Track revenue and analytics" },
+    { to: "/vendor/feedback", label: "Customer Feedback", icon: MessageSquare, desc: "View ratings and fault reports" },
   ];
 
   return (
