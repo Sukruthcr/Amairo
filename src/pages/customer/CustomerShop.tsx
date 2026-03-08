@@ -8,10 +8,20 @@ import { useCart } from "@/contexts/CartContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
-import { Search, ShoppingCart, ImageIcon, Plus } from "lucide-react";
+import { Search, ShoppingCart, ImageIcon, Plus, Package, Clock } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
+
+const statusLabels: Record<string, string> = {
+  pending: "Pending",
+  accepted: "Accepted",
+  preparing: "Preparing",
+  dispatched: "Dispatched",
+  picked_up: "Picked Up",
+  delivered: "Delivered",
+  rejected: "Rejected",
+};
 
 const CustomerShop = () => {
   const { user } = useAuth();
@@ -27,6 +37,21 @@ const CustomerShop = () => {
         .select("*")
         .eq("is_active", true)
         .order("name");
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!user,
+  });
+
+  const { data: recentOrders = [] } = useQuery({
+    queryKey: ["recent-orders", user?.id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("orders")
+        .select("id, status, total, created_at, delivery_address")
+        .eq("customer_id", user!.id)
+        .order("created_at", { ascending: false })
+        .limit(3);
       if (error) throw error;
       return data;
     },
@@ -55,6 +80,39 @@ const CustomerShop = () => {
             </Button>
           </Link>
         </motion.div>
+
+        {/* Recent Orders */}
+        {recentOrders.length > 0 && (
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="mb-8">
+            <div className="flex items-center justify-between mb-3">
+              <h2 className="text-lg font-semibold flex items-center gap-2">
+                <Package className="h-5 w-5 text-primary" /> Recent Orders
+              </h2>
+              <Link to="/customer/orders" className="text-sm text-primary hover:underline">View all</Link>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              {recentOrders.map((o: any) => (
+                <Link key={o.id} to="/customer/orders">
+                  <Card className="hover:border-primary/30 transition-colors cursor-pointer">
+                    <CardContent className="pt-4 pb-4">
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="font-mono text-xs text-muted-foreground">#{o.id.slice(0, 8)}</span>
+                        <Badge variant={o.status === "delivered" ? "default" : o.status === "rejected" ? "destructive" : "secondary"} className="text-[10px]">
+                          {statusLabels[o.status] || o.status}
+                        </Badge>
+                      </div>
+                      <p className="font-display font-bold">₹{Number(o.total).toFixed(0)}</p>
+                      <p className="text-[11px] text-muted-foreground flex items-center gap-1 mt-1">
+                        <Clock className="h-3 w-3" />
+                        {new Date(o.created_at).toLocaleDateString()}
+                      </p>
+                    </CardContent>
+                  </Card>
+                </Link>
+              ))}
+            </div>
+          </motion.div>
+        )}
 
         <div className="relative mb-6">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />

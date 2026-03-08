@@ -6,10 +6,55 @@ import { motion } from "framer-motion";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
-import { Store, Package, TrendingUp, ClipboardCheck, ShoppingCart, BarChart3 } from "lucide-react";
+import { Store, Package, TrendingUp, ClipboardCheck, ShoppingCart, BarChart3, MapPin, Locate } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { useState } from "react";
 
 const VendorDashboard = () => {
   const { user } = useAuth();
+  const { toast } = useToast();
+  const [savingLoc, setSavingLoc] = useState(false);
+
+  const { data: profile, refetch: refetchProfile } = useQuery({
+    queryKey: ["vendor-profile-loc", user?.id],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("profiles")
+        .select("latitude, longitude")
+        .eq("user_id", user!.id)
+        .single();
+      return data;
+    },
+    enabled: !!user,
+  });
+
+  const saveShopLocation = () => {
+    if (!navigator.geolocation) {
+      toast({ title: "Geolocation not supported", variant: "destructive" });
+      return;
+    }
+    setSavingLoc(true);
+    navigator.geolocation.getCurrentPosition(
+      async (pos) => {
+        const { error } = await supabase
+          .from("profiles")
+          .update({ latitude: pos.coords.latitude, longitude: pos.coords.longitude })
+          .eq("user_id", user!.id);
+        setSavingLoc(false);
+        if (error) {
+          toast({ title: "Error saving location", variant: "destructive" });
+        } else {
+          toast({ title: "📍 Shop location saved!" });
+          refetchProfile();
+        }
+      },
+      () => {
+        setSavingLoc(false);
+        toast({ title: "Location access denied", variant: "destructive" });
+      },
+      { enableHighAccuracy: true }
+    );
+  };
 
   const { data: productCount = 0 } = useQuery({
     queryKey: ["vendor-dash-products", user?.id],
@@ -68,6 +113,29 @@ const VendorDashboard = () => {
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-10">
           <h1 className="text-3xl font-bold mb-2">Vendor Dashboard</h1>
           <p className="text-muted-foreground">Welcome, {user?.user_metadata?.full_name || "Vendor"}. Manage your shop here.</p>
+        </motion.div>
+
+        {/* Shop Location Banner */}
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }} className="mb-6">
+          <Card className={profile?.latitude ? "border-primary/20" : "border-destructive/30 bg-destructive/5"}>
+            <CardContent className="pt-5 pb-5 flex items-center gap-4">
+              <div className={`h-10 w-10 rounded-lg flex items-center justify-center shrink-0 ${profile?.latitude ? "bg-primary/10" : "bg-destructive/10"}`}>
+                <MapPin className={`h-5 w-5 ${profile?.latitude ? "text-primary" : "text-destructive"}`} />
+              </div>
+              <div className="flex-1">
+                <p className="font-medium text-sm">
+                  {profile?.latitude ? "Shop location is set ✓" : "Shop location not set"}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  {profile?.latitude ? "Riders can navigate to your shop for pickups" : "Set your location so riders can find your shop"}
+                </p>
+              </div>
+              <Button size="sm" variant={profile?.latitude ? "outline" : "default"} className="gap-1 shrink-0" onClick={saveShopLocation} disabled={savingLoc}>
+                <Locate className={`h-3.5 w-3.5 ${savingLoc ? "animate-spin" : ""}`} />
+                {savingLoc ? "Saving..." : profile?.latitude ? "Update" : "Set Location"}
+              </Button>
+            </CardContent>
+          </Card>
         </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">

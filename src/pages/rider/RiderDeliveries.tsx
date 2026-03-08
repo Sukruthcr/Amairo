@@ -8,7 +8,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { motion } from "framer-motion";
-import { Package, MapPin, CheckCircle, Truck } from "lucide-react";
+import { Package, MapPin, CheckCircle, Truck, Navigation, Store, User } from "lucide-react";
 import { useEffect } from "react";
 
 const statusFlow: Record<string, { next: string; label: string; icon: any }> = {
@@ -36,7 +36,24 @@ const RiderDeliveries = () => {
     enabled: !!user,
   });
 
-  // Realtime
+  // Fetch vendor profiles for location
+  const vendorIds = [...new Set(deliveries.map((d: any) => d.vendor_id))];
+  const { data: vendorProfiles = [] } = useQuery({
+    queryKey: ["vendor-profiles", vendorIds],
+    queryFn: async () => {
+      if (vendorIds.length === 0) return [];
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("user_id, full_name, shop_name, latitude, longitude, phone")
+        .in("user_id", vendorIds);
+      if (error) throw error;
+      return data;
+    },
+    enabled: vendorIds.length > 0,
+  });
+
+  const vendorMap = Object.fromEntries(vendorProfiles.map((v: any) => [v.user_id, v]));
+
   useEffect(() => {
     if (!user) return;
     const channel = supabase
@@ -60,6 +77,10 @@ const RiderDeliveries = () => {
     },
     onError: (e: any) => toast({ title: "Error", description: e.message, variant: "destructive" }),
   });
+
+  const openGoogleMaps = (lat: number, lng: number, label: string) => {
+    window.open(`https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`, "_blank");
+  };
 
   const active = deliveries.filter((d: any) => d.status !== "delivered");
   const completed = deliveries.filter((d: any) => d.status === "delivered");
@@ -89,12 +110,16 @@ const RiderDeliveries = () => {
                 <h2 className="text-lg font-semibold mb-3 flex items-center gap-2">
                   <MapPin className="h-5 w-5 text-secondary" /> Active ({active.length})
                 </h2>
-                <div className="space-y-3">
+                <div className="space-y-4">
                   {active.map((o: any) => {
                     const action = statusFlow[o.status];
+                    const vendor = vendorMap[o.vendor_id];
+                    const hasVendorLoc = vendor?.latitude && vendor?.longitude;
+                    const hasCustomerLoc = o.customer_lat && o.customer_lng;
+
                     return (
                       <Card key={o.id} className="border-secondary/30">
-                        <CardContent className="pt-5">
+                        <CardContent className="pt-5 space-y-4">
                           <div className="flex items-start justify-between gap-4">
                             <div className="flex-1">
                               <div className="flex items-center gap-2 mb-2">
@@ -106,11 +131,6 @@ const RiderDeliveries = () => {
                                   <div key={item.id}>{item.products?.name} × {item.quantity} {item.products?.unit}</div>
                                 ))}
                               </div>
-                              {o.delivery_address && (
-                                <p className="text-xs text-muted-foreground flex items-center gap-1">
-                                  <MapPin className="h-3 w-3" /> {o.delivery_address}
-                                </p>
-                              )}
                               <p className="font-medium mt-2">₹{Number(o.total).toFixed(2)}</p>
                             </div>
                             {action && (
@@ -118,6 +138,48 @@ const RiderDeliveries = () => {
                                 <action.icon className="h-3.5 w-3.5" /> {action.label}
                               </Button>
                             )}
+                          </div>
+
+                          {/* Navigation Section */}
+                          <div className="border-t border-border pt-3 space-y-2">
+                            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Navigation</p>
+                            
+                            {/* Step 1: Go to vendor */}
+                            <div className={`flex items-center gap-3 p-3 rounded-lg ${o.status === "dispatched" ? "bg-primary/10 border border-primary/20" : "bg-muted/50"}`}>
+                              <Store className="h-5 w-5 text-primary shrink-0" />
+                              <div className="flex-1 min-w-0">
+                                <p className="text-sm font-medium">
+                                  {o.status === "dispatched" ? "① Go to Vendor" : "✓ Picked up from vendor"}
+                                </p>
+                                <p className="text-xs text-muted-foreground truncate">
+                                  {vendor?.shop_name || vendor?.full_name || "Vendor"}
+                                  {vendor?.phone && ` • ${vendor.phone}`}
+                                </p>
+                              </div>
+                              {hasVendorLoc && o.status === "dispatched" && (
+                                <Button size="sm" variant="default" className="gap-1 shrink-0" onClick={() => openGoogleMaps(vendor.latitude, vendor.longitude, "Vendor")}>
+                                  <Navigation className="h-3.5 w-3.5" /> Navigate
+                                </Button>
+                              )}
+                            </div>
+
+                            {/* Step 2: Go to customer */}
+                            <div className={`flex items-center gap-3 p-3 rounded-lg ${o.status === "picked_up" ? "bg-primary/10 border border-primary/20" : "bg-muted/50"}`}>
+                              <User className="h-5 w-5 text-primary shrink-0" />
+                              <div className="flex-1 min-w-0">
+                                <p className="text-sm font-medium">
+                                  {o.status === "picked_up" ? "② Deliver to Customer" : "② Customer Location"}
+                                </p>
+                                <p className="text-xs text-muted-foreground truncate">
+                                  {o.delivery_address || "No address"}
+                                </p>
+                              </div>
+                              {hasCustomerLoc && o.status === "picked_up" && (
+                                <Button size="sm" variant="default" className="gap-1 shrink-0" onClick={() => openGoogleMaps(o.customer_lat, o.customer_lng, "Customer")}>
+                                  <Navigation className="h-3.5 w-3.5" /> Navigate
+                                </Button>
+                              )}
+                            </div>
                           </div>
                         </CardContent>
                       </Card>
