@@ -8,7 +8,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { motion } from "framer-motion";
-import { Package, MapPin, CheckCircle, Truck, Navigation, Store, User, Locate } from "lucide-react";
+import { Package, MapPin, CheckCircle, Truck, Navigation, Store, User, Locate, Copy } from "lucide-react";
 import { useEffect, useState, useCallback } from "react";
 
 const statusFlow: Record<string, { next: string; label: string; icon: any }> = {
