@@ -57,6 +57,8 @@ export type Database = {
         Row: {
           created_at: string
           customer_id: string
+          customer_lat: number | null
+          customer_lng: number | null
           delivery_address: string | null
           id: string
           rider_id: string | null
@@ -68,6 +70,8 @@ export type Database = {
         Insert: {
           created_at?: string
           customer_id: string
+          customer_lat?: number | null
+          customer_lng?: number | null
           delivery_address?: string | null
           id?: string
           rider_id?: string | null
@@ -79,6 +83,8 @@ export type Database = {
         Update: {
           created_at?: string
           customer_id?: string
+          customer_lat?: number | null
+          customer_lng?: number | null
           delivery_address?: string | null
           id?: string
           rider_id?: string | null
@@ -140,6 +146,8 @@ export type Database = {
           full_name: string | null
           gst_number: string | null
           id: string
+          latitude: number | null
+          longitude: number | null
           pan_number: string | null
           phone: string | null
           rejection_reason: string | null
@@ -156,6 +164,8 @@ export type Database = {
           full_name?: string | null
           gst_number?: string | null
           id?: string
+          latitude?: number | null
+          longitude?: number | null
           pan_number?: string | null
           phone?: string | null
           rejection_reason?: string | null
@@ -172,6 +182,8 @@ export type Database = {
           full_name?: string | null
           gst_number?: string | null
           id?: string
+          latitude?: number | null
+          longitude?: number | null
           pan_number?: string | null
           phone?: string | null
           rejection_reason?: string | null
