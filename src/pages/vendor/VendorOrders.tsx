@@ -2,14 +2,15 @@ import Layout from "@/components/Layout";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { motion } from "framer-motion";
-import { CheckCircle, XCircle, Clock, Package } from "lucide-react";
-import { useEffect } from "react";
+import { CheckCircle, XCircle, Clock, Package, Truck } from "lucide-react";
+import { useEffect, useState } from "react";
 
 const statusColors: Record<string, string> = {
   pending: "secondary",
@@ -24,6 +25,7 @@ const VendorOrders = () => {
   const { user } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const [selectedRiders, setSelectedRiders] = useState<Record<string, string>>({});
 
   const { data: orders = [], isLoading } = useQuery({
     queryKey: ["vendor-orders", user?.id],
@@ -39,6 +41,18 @@ const VendorOrders = () => {
     enabled: !!user,
   });
 
+  // Get available riders
+  const { data: riders = [] } = useQuery({
+    queryKey: ["available-riders"],
+    queryFn: async () => {
+      const { data: roles } = await supabase.from("user_roles").select("user_id").eq("role", "rider");
+      if (!roles?.length) return [];
+      const ids = roles.map((r) => r.user_id);
+      const { data: profiles } = await supabase.from("profiles").select("user_id, full_name").in("user_id", ids);
+      return profiles || [];
+    },
+  });
+
   // Realtime subscription
   useEffect(() => {
     if (!user) return;
@@ -52,8 +66,10 @@ const VendorOrders = () => {
   }, [user, queryClient]);
 
   const updateStatus = useMutation({
-    mutationFn: async ({ id, status }: { id: string; status: string }) => {
-      const { error } = await supabase.from("orders").update({ status }).eq("id", id);
+    mutationFn: async ({ id, status, rider_id }: { id: string; status: string; rider_id?: string }) => {
+      const update: any = { status };
+      if (rider_id) update.rider_id = rider_id;
+      const { error } = await supabase.from("orders").update(update).eq("id", id);
       if (error) throw error;
     },
     onSuccess: (_, { status }) => {
@@ -62,6 +78,15 @@ const VendorOrders = () => {
     },
     onError: (e: any) => toast({ title: "Error", description: e.message, variant: "destructive" }),
   });
+
+  const handleDispatch = (orderId: string) => {
+    const riderId = selectedRiders[orderId];
+    if (!riderId) {
+      toast({ title: "Please select a rider first", variant: "destructive" });
+      return;
+    }
+    updateStatus.mutate({ id: orderId, status: "dispatched", rider_id: riderId });
+  };
 
   return (
     <Layout>
@@ -115,26 +140,41 @@ const VendorOrders = () => {
                       <TableCell className="text-xs text-muted-foreground">
                         {new Date(o.created_at).toLocaleDateString()}
                       </TableCell>
-                      <TableCell className="text-right space-x-1">
+                      <TableCell className="text-right">
                         {o.status === "pending" && (
-                          <>
+                          <div className="flex gap-1 justify-end">
                             <Button size="sm" variant="default" className="gap-1" onClick={() => updateStatus.mutate({ id: o.id, status: "accepted" })}>
                               <CheckCircle className="h-3.5 w-3.5" /> Accept
                             </Button>
                             <Button size="sm" variant="destructive" className="gap-1" onClick={() => updateStatus.mutate({ id: o.id, status: "rejected" })}>
                               <XCircle className="h-3.5 w-3.5" /> Reject
                             </Button>
-                          </>
+                          </div>
                         )}
                         {o.status === "accepted" && (
                           <Button size="sm" variant="outline" className="gap-1" onClick={() => updateStatus.mutate({ id: o.id, status: "preparing" })}>
                             <Clock className="h-3.5 w-3.5" /> Preparing
                           </Button>
                         )}
-                        {o.status === "preparing" && (
-                          <Button size="sm" variant="outline" className="gap-1" onClick={() => updateStatus.mutate({ id: o.id, status: "dispatched" })}>
-                            <Package className="h-3.5 w-3.5" /> Dispatch
-                          </Button>
+                        {o.status === "preparing" && !o.rider_id && (
+                          <div className="flex items-center gap-2 justify-end">
+                            <Select value={selectedRiders[o.id] || ""} onValueChange={(v) => setSelectedRiders({ ...selectedRiders, [o.id]: v })}>
+                              <SelectTrigger className="w-36 h-8 text-xs">
+                                <SelectValue placeholder="Select rider" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {riders.map((r: any) => (
+                                  <SelectItem key={r.user_id} value={r.user_id}>{r.full_name || "Unnamed"}</SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                            <Button size="sm" variant="outline" className="gap-1" onClick={() => handleDispatch(o.id)}>
+                              <Truck className="h-3.5 w-3.5" /> Dispatch
+                            </Button>
+                          </div>
+                        )}
+                        {o.status === "dispatched" && (
+                          <Badge variant="secondary" className="text-xs">Rider assigned</Badge>
                         )}
                       </TableCell>
                     </TableRow>
