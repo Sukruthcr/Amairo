@@ -9,9 +9,31 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
-import { Package, MapPin, Clock, CheckCircle2, Circle, Truck, ChefHat, PackageCheck, Timer, XCircle, Star, MessageSquare, AlertTriangle } from "lucide-react";
+import { Package, MapPin, Clock, CheckCircle2, Circle, Truck, ChefHat, PackageCheck, Timer, XCircle, Star, MessageSquare, AlertTriangle, Hourglass } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useToast } from "@/hooks/use-toast";
+
+// Estimated minutes from order creation per status
+const statusETA: Record<string, number> = {
+  pending: 5,
+  accepted: 10,
+  preparing: 25,
+  dispatched: 35,
+  picked_up: 45,
+  delivered: 0,
+};
+
+const getEstimatedTime = (order: any) => {
+  if (order.status === "delivered" || order.status === "rejected") return null;
+  const created = new Date(order.created_at).getTime();
+  const totalEstMinutes = 45; // Total estimated delivery time
+  const progressMinutes = statusETA[order.status] || 0;
+  const remainingMinutes = totalEstMinutes - progressMinutes;
+  const etaTime = new Date(created + totalEstMinutes * 60000);
+  const now = Date.now();
+  const minsLeft = Math.max(0, Math.round((etaTime.getTime() - now) / 60000));
+  return { remainingMinutes: minsLeft > 0 ? minsLeft : remainingMinutes, etaTime };
+};
 
 const statusSteps = ["pending", "accepted", "preparing", "dispatched", "picked_up", "delivered"];
 const statusConfig: Record<string, { label: string; icon: React.ElementType; color: string }> = {
