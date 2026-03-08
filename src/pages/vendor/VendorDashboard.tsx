@@ -233,6 +233,42 @@ const VendorDashboard = () => {
             </motion.div>
           ))}
         </div>
+
+        {/* Customer Feedback Section */}
+        {recentFeedback.length > 0 && (
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.7 }} className="mt-8">
+            <h2 className="text-lg font-semibold mb-3 flex items-center gap-2">
+              <MessageSquare className="h-5 w-5 text-primary" /> Customer Feedback
+            </h2>
+            <div className="space-y-3">
+              {recentFeedback.map((fb: any) => (
+                <Card key={fb.id} className={fb.has_fault ? "border-destructive/30" : ""}>
+                  <CardContent className="pt-4 pb-4">
+                    <div className="flex items-center gap-2 mb-2">
+                      <div className="flex">
+                        {[1,2,3,4,5].map(s => (
+                          <Star key={s} className={`h-3.5 w-3.5 ${s <= fb.rating ? "text-yellow-500 fill-yellow-500" : "text-muted-foreground/20"}`} />
+                        ))}
+                      </div>
+                      <span className="text-xs text-muted-foreground">#{fb.order_id.slice(0, 8)}</span>
+                      <span className="text-xs text-muted-foreground">{new Date(fb.created_at).toLocaleDateString()}</span>
+                      {fb.has_fault && (
+                        <span className="text-xs text-destructive font-medium flex items-center gap-1">⚠️ Fault reported</span>
+                      )}
+                    </div>
+                    {fb.product_feedback && <p className="text-sm mb-1"><span className="font-medium text-xs text-muted-foreground">Product:</span> {fb.product_feedback}</p>}
+                    {fb.delivery_feedback && <p className="text-sm mb-1"><span className="font-medium text-xs text-muted-foreground">Delivery:</span> {fb.delivery_feedback}</p>}
+                    {fb.has_fault && fb.fault_description && (
+                      <div className="mt-2 p-2 rounded bg-destructive/10 border border-destructive/20">
+                        <p className="text-sm text-destructive"><span className="font-medium">Fault:</span> {fb.fault_description}</p>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </motion.div>
+        )}
       </section>
     </Layout>
   );
