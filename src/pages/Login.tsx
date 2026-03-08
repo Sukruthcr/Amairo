@@ -47,7 +47,13 @@ const Login = () => {
       if (error) {
         toast({ title: "Sign Up Failed", description: error.message, variant: "destructive" });
       } else {
-        toast({ title: "Account Created!", description: "Check your email to verify your account." });
+        toast({ title: "Account Created!", description: "You can now sign in." });
+        // Sign out immediately so user must log in manually
+        await supabase.auth.signOut();
+        setIsLogin(true);
+        setEmail("");
+        setPassword("");
+        setFullName("");
       }
     }
     setLoading(false);
