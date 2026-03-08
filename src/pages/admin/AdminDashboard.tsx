@@ -12,6 +12,7 @@ const adminCards = [
   { title: "Manage Riders", desc: "View registered riders and stats.", icon: Bike, to: "/admin/riders", color: "text-secondary", bg: "bg-secondary/10" },
   { title: "Orders", desc: "Monitor orders, assign riders.", icon: Package, to: "/admin/orders", color: "text-accent", bg: "bg-accent/10" },
   { title: "Users", desc: "View all users and roles.", icon: Users, to: "/admin/users", color: "text-primary", bg: "bg-primary/10" },
+  { title: "Messages", desc: "View contact form submissions.", icon: MessageSquare, to: "/admin/messages", color: "text-secondary", bg: "bg-secondary/10" },
 ];
 
 const AdminDashboard = () => {
