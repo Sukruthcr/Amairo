@@ -47,7 +47,7 @@ const Stats = () => {
         >
           <h1 className="text-4xl md:text-5xl font-bold mb-4">Company Performance</h1>
           <p className="text-muted-foreground max-w-xl mx-auto">
-            A snapshot of how Smart Delivery Hub is growing — real numbers, real impact.
+            A snapshot of how Amairo is growing — real numbers, real impact.
           </p>
         </motion.div>
 

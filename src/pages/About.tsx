@@ -40,7 +40,7 @@ const About = () => {
       <section className="container py-20 md:py-28">
         <motion.div initial="hidden" animate="visible" className="max-w-3xl mx-auto text-center">
           <motion.h1 variants={fadeUp} custom={0} className="text-4xl md:text-5xl font-bold mb-6">
-            About <span className="text-primary">Smart Delivery Hub</span>
+            About <span className="text-primary">Amairo</span>
           </motion.h1>
           <motion.p variants={fadeUp} custom={1} className="text-lg text-muted-foreground leading-relaxed">
             We're on a mission to bridge the gap between local shops and customers by building a reliable, tech-driven delivery ecosystem that benefits everyone — vendors, riders, and customers alike.
@@ -80,7 +80,7 @@ const About = () => {
       <section className="container py-20">
         <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} className="text-center mb-14">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">Meet the Team</h2>
-          <p className="text-muted-foreground">The people behind Smart Delivery Hub.</p>
+          <p className="text-muted-foreground">The people behind Amairo.</p>
         </motion.div>
         <div className="grid md:grid-cols-2 gap-8 max-w-3xl mx-auto">
           {founders.map((f, i) => (

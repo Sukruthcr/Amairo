@@ -139,12 +139,10 @@ const Login = () => {
             transition={{ duration: 0.6 }}
           >
             <h1 className="text-4xl xl:text-5xl font-display font-bold text-primary-foreground leading-tight">
-              Smart Delivery
-              <br />
-              <span className="text-primary-foreground/80">Hub</span>
+              Amairo
             </h1>
             <p className="mt-4 text-primary-foreground/70 text-lg max-w-md font-body">
-              Your one-stop platform connecting local vendors, reliable riders, and happy customers.
+              Everything you need, one place. Connecting local vendors, reliable riders, and happy customers.
             </p>
           </motion.div>
 
@@ -190,7 +188,7 @@ const Login = () => {
       <div className="w-full lg:w-1/2 flex flex-col">
         {/* Mobile header */}
         <div className="lg:hidden px-6 py-4 border-b border-border">
-          <h2 className="text-xl font-display font-bold text-foreground">Smart Delivery Hub</h2>
+          <h2 className="text-xl font-display font-bold text-foreground">Amairo</h2>
         </div>
 
         <div className="flex-1 flex items-center justify-center px-6 py-10 overflow-y-auto bg-background">
@@ -204,7 +202,7 @@ const Login = () => {
                 {isLogin ? "Welcome Back" : "Create Account"}
               </h2>
               <p className="text-muted-foreground text-sm mt-1 font-body">
-                {isLogin ? "Sign in to your account" : "Join Smart Delivery Hub"}
+                {isLogin ? "Sign in to your account" : "Join Amairo"}
               </p>
             </div>
 

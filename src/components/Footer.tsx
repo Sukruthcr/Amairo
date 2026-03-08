@@ -10,7 +10,7 @@ const Footer = () => {
           <div className="md:col-span-1">
             <div className="flex items-center gap-2 font-display text-lg font-bold mb-4">
               <Truck className="h-5 w-5" />
-              Smart Delivery Hub
+              Amairo
             </div>
             <p className="text-sm opacity-70 leading-relaxed">
               Connecting vendors, customers, and riders in one seamless delivery ecosystem.
@@ -65,7 +65,7 @@ const Footer = () => {
         </div>
 
         <div className="border-t border-background/10 mt-12 pt-8 text-center text-sm opacity-50">
-          © {new Date().getFullYear()} Smart Delivery Hub. All rights reserved.
+          © {new Date().getFullYear()} Amairo. All rights reserved.
         </div>
       </div>
     </footer>

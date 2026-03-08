@@ -31,7 +31,7 @@ const steps = [
 ];
 
 const testimonials = [
-  { name: "Priya S.", role: "Customer", text: "Super fast delivery and always fresh products. Love using Smart Delivery Hub!", rating: 5 },
+  { name: "Priya S.", role: "Customer", text: "Super fast delivery and always fresh products. Love using Amairo!", rating: 5 },
   { name: "Rajesh K.", role: "Vendor", text: "Managing my shop inventory has never been easier. Great platform for vendors!", rating: 5 },
   { name: "Amit D.", role: "Rider", text: "The GPS tracking and clear delivery instructions make my job smooth.", rating: 4 },
 ];
@@ -62,7 +62,7 @@ const Index = () => {
               custom={1}
               className="text-lg md:text-xl text-muted-foreground mb-10 max-w-2xl mx-auto"
             >
-              Smart Delivery Hub connects neighborhood vendors with customers through reliable riders — all managed in one seamless platform.
+              Amairo connects neighborhood vendors with customers through reliable riders — everything you need, one place.
             </motion.p>
             <motion.div variants={fadeUp} custom={2} className="flex flex-wrap gap-4 justify-center">
               <Link to="/contact">
@@ -188,7 +188,7 @@ const Index = () => {
         >
           <h2 className="text-3xl md:text-4xl font-bold mb-4">Ready to Join?</h2>
           <p className="opacity-90 max-w-xl mx-auto mb-8">
-            Whether you're a vendor, rider, or customer — Smart Delivery Hub has a place for you.
+            Whether you're a vendor, rider, or customer — Amairo has a place for you.
           </p>
           <div className="flex flex-wrap gap-4 justify-center">
             <Link to="/contact">

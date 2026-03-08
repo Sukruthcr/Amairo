@@ -62,7 +62,7 @@ const Navbar = () => {
       <div className="container flex items-center justify-between h-16">
         <Link to={role === "vendor" ? "/vendor" : role === "rider" ? "/rider" : role === "customer" ? "/customer/shop" : "/"} className="flex items-center gap-2 font-display text-xl font-bold text-primary">
           <Truck className="h-6 w-6" />
-          Smart Delivery Hub
+          Amairo
         </Link>
 
         {/* Desktop */}
