@@ -15,6 +15,8 @@ const VendorDashboard = () => {
   const { user } = useAuth();
   const { toast } = useToast();
   const [savingLoc, setSavingLoc] = useState(false);
+  const [manualLat, setManualLat] = useState("");
+  const [manualLng, setManualLng] = useState("");
 
   const { data: profile, refetch: refetchProfile } = useQuery({
     queryKey: ["vendor-profile-loc", user?.id],
