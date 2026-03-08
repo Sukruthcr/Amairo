@@ -30,6 +30,7 @@ import RiderEarnings from "./pages/rider/RiderEarnings";
 import CustomerShop from "./pages/customer/CustomerShop";
 import CustomerCart from "./pages/customer/CustomerCart";
 import CustomerOrders from "./pages/customer/CustomerOrders";
+import CustomerProfile from "./pages/customer/CustomerProfile";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
