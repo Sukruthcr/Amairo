@@ -25,7 +25,7 @@ const VendorDashboard = () => {
     queryFn: async () => {
       const { data } = await supabase
         .from("profiles")
-        .select("latitude, longitude")
+        .select("latitude, longitude, shop_address")
         .eq("user_id", user!.id)
         .single();
       return data;
