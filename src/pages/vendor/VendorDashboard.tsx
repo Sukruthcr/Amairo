@@ -33,7 +33,7 @@ const VendorDashboard = () => {
 
   const saveShopLocation = () => {
     if (!navigator.geolocation) {
-      toast({ title: "Geolocation not supported", variant: "destructive" });
+      toast({ title: "Geolocation not supported, use manual entry", variant: "destructive" });
       return;
     }
     setSavingLoc(true);
@@ -53,10 +53,33 @@ const VendorDashboard = () => {
       },
       () => {
         setSavingLoc(false);
-        toast({ title: "Location access denied", variant: "destructive" });
+        toast({ title: "Location access denied — use manual entry below", variant: "destructive" });
       },
       { enableHighAccuracy: true }
     );
+  };
+
+  const saveManualLocation = async () => {
+    const lat = parseFloat(manualLat);
+    const lng = parseFloat(manualLng);
+    if (isNaN(lat) || isNaN(lng) || lat < -90 || lat > 90 || lng < -180 || lng > 180) {
+      toast({ title: "Invalid coordinates", description: "Latitude: -90 to 90, Longitude: -180 to 180", variant: "destructive" });
+      return;
+    }
+    setSavingLoc(true);
+    const { error } = await supabase
+      .from("profiles")
+      .update({ latitude: lat, longitude: lng })
+      .eq("user_id", user!.id);
+    setSavingLoc(false);
+    if (error) {
+      toast({ title: "Error saving location", variant: "destructive" });
+    } else {
+      toast({ title: "📍 Shop location saved!" });
+      setManualLat("");
+      setManualLng("");
+      refetchProfile();
+    }
   };
 
   const { data: productCount = 0 } = useQuery({
