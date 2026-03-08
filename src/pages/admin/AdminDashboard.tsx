@@ -1,7 +1,7 @@
 import Layout from "@/components/Layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { motion } from "framer-motion";
-import { Users, Store, Bike, Package, MessageSquare } from "lucide-react";
+import { Users, Store, Bike, Package, MessageSquare, Star } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
@@ -13,6 +13,7 @@ const adminCards = [
   { title: "Orders", desc: "Monitor orders, assign riders.", icon: Package, to: "/admin/orders", color: "text-accent", bg: "bg-accent/10" },
   { title: "Users", desc: "View all users and roles.", icon: Users, to: "/admin/users", color: "text-primary", bg: "bg-primary/10" },
   { title: "Messages", desc: "View contact form submissions.", icon: MessageSquare, to: "/admin/messages", color: "text-secondary", bg: "bg-secondary/10" },
+  { title: "Feedback", desc: "View all customer feedback & faults.", icon: Star, to: "/admin/feedback", color: "text-accent", bg: "bg-accent/10" },
 ];
 
 const AdminDashboard = () => {
