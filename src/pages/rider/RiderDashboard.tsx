@@ -1,12 +1,13 @@
 import { Link } from "react-router-dom";
 import Layout from "@/components/Layout";
 import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { motion } from "framer-motion";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
-import { Bike, Package, MapPin, IndianRupee, ClipboardList, BarChart3, Bell } from "lucide-react";
+import { Bike, Package, MapPin, IndianRupee, ClipboardList, BarChart3, Bell, User, Phone, FileText, Car } from "lucide-react";
 import { useEffect } from "react";
 
 const RiderDashboard = () => {
@@ -41,6 +42,19 @@ const RiderDashboard = () => {
       .subscribe();
     return () => { supabase.removeChannel(channel); };
   }, [user, queryClient, toast]);
+
+  const { data: profile } = useQuery({
+    queryKey: ["rider-profile", user?.id],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("profiles")
+        .select("full_name, phone, dl_number, pan_number, vehicle_details, approval_status")
+        .eq("user_id", user!.id)
+        .single();
+      return data;
+    },
+    enabled: !!user,
+  });
 
   const { data: todayDeliveries = 0 } = useQuery({
     queryKey: ["rider-dash-deliveries", user?.id],
@@ -99,9 +113,60 @@ const RiderDashboard = () => {
   return (
     <Layout>
       <section className="container py-20 md:py-28">
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-10">
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
           <h1 className="text-3xl font-bold mb-2">Rider Dashboard</h1>
-          <p className="text-muted-foreground">Welcome, {user?.user_metadata?.full_name || "Rider"}. Your deliveries at a glance.</p>
+          <p className="text-muted-foreground">Welcome, {profile?.full_name || user?.user_metadata?.full_name || "Rider"}. Your deliveries at a glance.</p>
+        </motion.div>
+
+        {/* Profile Card */}
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.03 }} className="mb-8">
+          <Card>
+            <CardContent className="pt-5 pb-5">
+              <div className="flex items-center gap-4 mb-4">
+                <div className="h-12 w-12 rounded-full bg-secondary/10 flex items-center justify-center shrink-0">
+                  <User className="h-6 w-6 text-secondary" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="font-semibold text-lg truncate">{profile?.full_name || "—"}</p>
+                  <Badge variant={profile?.approval_status === "approved" ? "default" : "secondary"} className="text-[10px]">
+                    {profile?.approval_status || "pending"}
+                  </Badge>
+                </div>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+                {profile?.phone && (
+                  <div className="flex items-center gap-2 text-muted-foreground">
+                    <Phone className="h-3.5 w-3.5 shrink-0" />
+                    <span>{profile.phone}</span>
+                  </div>
+                )}
+                {user?.email && (
+                  <div className="flex items-center gap-2 text-muted-foreground">
+                    <Bike className="h-3.5 w-3.5 shrink-0" />
+                    <span className="truncate">{user.email}</span>
+                  </div>
+                )}
+                {profile?.dl_number && (
+                  <div className="flex items-center gap-2 text-muted-foreground">
+                    <FileText className="h-3.5 w-3.5 shrink-0" />
+                    <span>DL: {profile.dl_number}</span>
+                  </div>
+                )}
+                {profile?.pan_number && (
+                  <div className="flex items-center gap-2 text-muted-foreground">
+                    <FileText className="h-3.5 w-3.5 shrink-0" />
+                    <span>PAN: {profile.pan_number}</span>
+                  </div>
+                )}
+                {profile?.vehicle_details && (
+                  <div className="flex items-center gap-2 text-muted-foreground">
+                    <Car className="h-3.5 w-3.5 shrink-0" />
+                    <span>{profile.vehicle_details}</span>
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
         </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
