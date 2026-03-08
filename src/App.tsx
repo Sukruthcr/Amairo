@@ -21,6 +21,8 @@ import VendorStockUpdate from "./pages/vendor/VendorStockUpdate";
 import VendorOrders from "./pages/vendor/VendorOrders";
 import VendorSales from "./pages/vendor/VendorSales";
 import RiderDashboard from "./pages/rider/RiderDashboard";
+import RiderDeliveries from "./pages/rider/RiderDeliveries";
+import RiderEarnings from "./pages/rider/RiderEarnings";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
