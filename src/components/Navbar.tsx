@@ -38,6 +38,7 @@ const customerLinks = [
   { to: "/customer/shop", label: "Shop" },
   { to: "/customer/cart", label: "Cart" },
   { to: "/customer/orders", label: "My Orders" },
+  { to: "/customer/profile", label: "Profile" },
 ];
 
 const Navbar = () => {
