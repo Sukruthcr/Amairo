@@ -14,6 +14,50 @@ export type Database = {
   }
   public: {
     Tables: {
+      order_feedback: {
+        Row: {
+          created_at: string
+          customer_id: string
+          delivery_feedback: string | null
+          fault_description: string | null
+          has_fault: boolean | null
+          id: string
+          order_id: string
+          product_feedback: string | null
+          rating: number
+        }
+        Insert: {
+          created_at?: string
+          customer_id: string
+          delivery_feedback?: string | null
+          fault_description?: string | null
+          has_fault?: boolean | null
+          id?: string
+          order_id: string
+          product_feedback?: string | null
+          rating: number
+        }
+        Update: {
+          created_at?: string
+          customer_id?: string
+          delivery_feedback?: string | null
+          fault_description?: string | null
+          has_fault?: boolean | null
+          id?: string
+          order_id?: string
+          product_feedback?: string | null
+          rating?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_feedback_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       order_items: {
         Row: {
           id: string
