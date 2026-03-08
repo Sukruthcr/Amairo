@@ -1,12 +1,13 @@
 import { Link } from "react-router-dom";
 import Layout from "@/components/Layout";
 import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { motion } from "framer-motion";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
-import { Bike, Package, MapPin, IndianRupee, ClipboardList, BarChart3, Bell } from "lucide-react";
+import { Bike, Package, MapPin, IndianRupee, ClipboardList, BarChart3, Bell, User, Phone, FileText, Car } from "lucide-react";
 import { useEffect } from "react";
 
 const RiderDashboard = () => {
