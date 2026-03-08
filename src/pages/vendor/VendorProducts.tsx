@@ -17,7 +17,22 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { Plus, Upload, Pencil, Trash2, Package, ImageIcon } from "lucide-react";
 
-const UNITS = ["kg", "g", "litre", "ml", "piece", "dozen", "bundle"];
+const UNITS = [
+  { value: "kg", label: "Kg (weight)", type: "weight" },
+  { value: "g", label: "Grams (weight)", type: "weight" },
+  { value: "litre", label: "Litre (volume)", type: "weight" },
+  { value: "ml", label: "ML (volume)", type: "weight" },
+  { value: "piece", label: "Piece (countable)", type: "countable" },
+  { value: "packet", label: "Packet", type: "countable" },
+  { value: "bottle", label: "Bottle", type: "countable" },
+  { value: "tube", label: "Tube", type: "countable" },
+  { value: "bar", label: "Bar (soap etc.)", type: "countable" },
+  { value: "dozen", label: "Dozen", type: "countable" },
+  { value: "bundle", label: "Bundle", type: "countable" },
+  { value: "box", label: "Box", type: "countable" },
+  { value: "can", label: "Can", type: "countable" },
+  { value: "pair", label: "Pair", type: "countable" },
+];
 
 const VendorProducts = () => {
   const { user } = useAuth();
@@ -156,7 +171,11 @@ const VendorProducts = () => {
                     <Select value={form.unit} onValueChange={(v) => setForm({ ...form, unit: v })}>
                       <SelectTrigger><SelectValue /></SelectTrigger>
                       <SelectContent>
-                        {UNITS.map((u) => <SelectItem key={u} value={u}>{u}</SelectItem>)}
+                        {UNITS.map((u) => (
+                          <SelectItem key={u.value} value={u.value}>
+                            {u.label}
+                          </SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                   </div>

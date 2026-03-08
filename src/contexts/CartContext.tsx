@@ -40,8 +40,9 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const updateQuantity = (product_id: string, quantity: number) => {
-    if (quantity <= 0) return removeItem(product_id);
-    setItems((prev) => prev.map((i) => i.product_id === product_id ? { ...i, quantity } : i));
+    const rounded = Math.round(quantity * 10) / 10; // avoid floating point issues
+    if (rounded <= 0) return removeItem(product_id);
+    setItems((prev) => prev.map((i) => i.product_id === product_id ? { ...i, quantity: rounded } : i));
   };
 
   const clearCart = () => setItems([]);
