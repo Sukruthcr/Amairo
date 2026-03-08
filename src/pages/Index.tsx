@@ -62,7 +62,7 @@ const Index = () => {
               custom={1}
               className="text-lg md:text-xl text-muted-foreground mb-10 max-w-2xl mx-auto"
             >
-              Smart Delivery Hub connects neighborhood vendors with customers through reliable riders — all managed in one seamless platform.
+              Amairo connects neighborhood vendors with customers through reliable riders — everything you need, one place.
             </motion.p>
             <motion.div variants={fadeUp} custom={2} className="flex flex-wrap gap-4 justify-center">
               <Link to="/contact">
