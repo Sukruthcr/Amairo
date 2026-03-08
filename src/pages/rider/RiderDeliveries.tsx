@@ -98,9 +98,27 @@ const RiderDeliveries = () => {
     onError: (e: any) => toast({ title: "Error", description: e.message, variant: "destructive" }),
   });
 
-  const openGoogleMaps = (destLat: number, destLng: number) => {
-    const origin = riderLat && riderLng ? `&origin=${riderLat},${riderLng}` : "";
-    window.open(`https://www.google.com/maps/dir/?api=1&destination=${destLat},${destLng}${origin}&travelmode=driving`, "_blank");
+  const openNavigation = (destLat: number, destLng: number) => {
+    // Use geo: URI which works on all devices and opens native map apps
+    // Falls back to intent-based URLs that won't be blocked by iframe
+    const origin = riderLat && riderLng ? `${riderLat},${riderLng}` : "";
+    
+    // Try multiple approaches for navigation
+    const googleMapsApp = `https://maps.google.com/maps?daddr=${destLat},${destLng}${origin ? `&saddr=${origin}` : ""}`;
+    const geoUri = `geo:${destLat},${destLng}?q=${destLat},${destLng}`;
+    
+    // Open in new tab - maps.google.com works better than www.google.com in iframes
+    const newWindow = window.open(googleMapsApp, "_blank");
+    if (!newWindow) {
+      // Fallback: try geo URI (works on mobile)
+      window.location.href = geoUri;
+    }
+  };
+
+  const copyLocation = (lat: number, lng: number, label: string) => {
+    navigator.clipboard.writeText(`${lat}, ${lng}`).then(() => {
+      toast({ title: `📋 ${label} coordinates copied!`, description: `${lat.toFixed(5)}, ${lng.toFixed(5)}` });
+    });
   };
 
   const active = deliveries.filter((d: any) => d.status !== "delivered");
