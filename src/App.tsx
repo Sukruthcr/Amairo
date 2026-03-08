@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { CartProvider } from "@/contexts/CartContext";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import Index from "./pages/Index";
 import About from "./pages/About";
@@ -23,6 +24,9 @@ import VendorSales from "./pages/vendor/VendorSales";
 import RiderDashboard from "./pages/rider/RiderDashboard";
 import RiderDeliveries from "./pages/rider/RiderDeliveries";
 import RiderEarnings from "./pages/rider/RiderEarnings";
+import CustomerShop from "./pages/customer/CustomerShop";
+import CustomerCart from "./pages/customer/CustomerCart";
+import CustomerOrders from "./pages/customer/CustomerOrders";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -34,35 +38,42 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <AuthProvider>
-          <Routes>
-            {/* Public */}
-            <Route path="/" element={<Index />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/stats" element={<Stats />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/login" element={<Login />} />
+          <CartProvider>
+            <Routes>
+              {/* Public */}
+              <Route path="/" element={<Index />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/stats" element={<Stats />} />
+              <Route path="/contact" element={<Contact />} />
+              <Route path="/login" element={<Login />} />
 
-            {/* Admin */}
-            <Route path="/admin" element={<ProtectedRoute requiredRole="admin"><AdminDashboard /></ProtectedRoute>} />
-            <Route path="/admin/vendors" element={<ProtectedRoute requiredRole="admin"><AdminVendors /></ProtectedRoute>} />
-            <Route path="/admin/riders" element={<ProtectedRoute requiredRole="admin"><AdminRiders /></ProtectedRoute>} />
-            <Route path="/admin/orders" element={<ProtectedRoute requiredRole="admin"><AdminOrders /></ProtectedRoute>} />
-            <Route path="/admin/users" element={<ProtectedRoute requiredRole="admin"><AdminUsers /></ProtectedRoute>} />
+              {/* Admin */}
+              <Route path="/admin" element={<ProtectedRoute requiredRole="admin"><AdminDashboard /></ProtectedRoute>} />
+              <Route path="/admin/vendors" element={<ProtectedRoute requiredRole="admin"><AdminVendors /></ProtectedRoute>} />
+              <Route path="/admin/riders" element={<ProtectedRoute requiredRole="admin"><AdminRiders /></ProtectedRoute>} />
+              <Route path="/admin/orders" element={<ProtectedRoute requiredRole="admin"><AdminOrders /></ProtectedRoute>} />
+              <Route path="/admin/users" element={<ProtectedRoute requiredRole="admin"><AdminUsers /></ProtectedRoute>} />
 
-            {/* Vendor */}
-            <Route path="/vendor" element={<ProtectedRoute requiredRole="vendor"><VendorDashboard /></ProtectedRoute>} />
-            <Route path="/vendor/products" element={<ProtectedRoute requiredRole="vendor"><VendorProducts /></ProtectedRoute>} />
-            <Route path="/vendor/stock" element={<ProtectedRoute requiredRole="vendor"><VendorStockUpdate /></ProtectedRoute>} />
-            <Route path="/vendor/orders" element={<ProtectedRoute requiredRole="vendor"><VendorOrders /></ProtectedRoute>} />
-            <Route path="/vendor/sales" element={<ProtectedRoute requiredRole="vendor"><VendorSales /></ProtectedRoute>} />
+              {/* Vendor */}
+              <Route path="/vendor" element={<ProtectedRoute requiredRole="vendor"><VendorDashboard /></ProtectedRoute>} />
+              <Route path="/vendor/products" element={<ProtectedRoute requiredRole="vendor"><VendorProducts /></ProtectedRoute>} />
+              <Route path="/vendor/stock" element={<ProtectedRoute requiredRole="vendor"><VendorStockUpdate /></ProtectedRoute>} />
+              <Route path="/vendor/orders" element={<ProtectedRoute requiredRole="vendor"><VendorOrders /></ProtectedRoute>} />
+              <Route path="/vendor/sales" element={<ProtectedRoute requiredRole="vendor"><VendorSales /></ProtectedRoute>} />
 
-            {/* Rider */}
-            <Route path="/rider" element={<ProtectedRoute requiredRole="rider"><RiderDashboard /></ProtectedRoute>} />
-            <Route path="/rider/deliveries" element={<ProtectedRoute requiredRole="rider"><RiderDeliveries /></ProtectedRoute>} />
-            <Route path="/rider/earnings" element={<ProtectedRoute requiredRole="rider"><RiderEarnings /></ProtectedRoute>} />
+              {/* Rider */}
+              <Route path="/rider" element={<ProtectedRoute requiredRole="rider"><RiderDashboard /></ProtectedRoute>} />
+              <Route path="/rider/deliveries" element={<ProtectedRoute requiredRole="rider"><RiderDeliveries /></ProtectedRoute>} />
+              <Route path="/rider/earnings" element={<ProtectedRoute requiredRole="rider"><RiderEarnings /></ProtectedRoute>} />
 
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+              {/* Customer */}
+              <Route path="/customer/shop" element={<ProtectedRoute requiredRole="customer"><CustomerShop /></ProtectedRoute>} />
+              <Route path="/customer/cart" element={<ProtectedRoute requiredRole="customer"><CustomerCart /></ProtectedRoute>} />
+              <Route path="/customer/orders" element={<ProtectedRoute requiredRole="customer"><CustomerOrders /></ProtectedRoute>} />
+
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </CartProvider>
         </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>

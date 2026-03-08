@@ -60,7 +60,7 @@ const Navbar = () => {
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-lg border-b border-border">
       <div className="container flex items-center justify-between h-16">
-        <Link to={role === "vendor" ? "/vendor" : role === "rider" ? "/rider" : "/"} className="flex items-center gap-2 font-display text-xl font-bold text-primary">
+        <Link to={role === "vendor" ? "/vendor" : role === "rider" ? "/rider" : role === "customer" ? "/customer/shop" : "/"} className="flex items-center gap-2 font-display text-xl font-bold text-primary">
           <Truck className="h-6 w-6" />
           Smart Delivery Hub
         </Link>
