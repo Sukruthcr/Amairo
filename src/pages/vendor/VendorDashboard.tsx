@@ -120,6 +120,28 @@ const VendorDashboard = () => {
     enabled: !!user,
   });
 
+  // Fetch recent feedback
+  const { data: recentFeedback = [] } = useQuery({
+    queryKey: ["vendor-feedback", user?.id],
+    queryFn: async () => {
+      // Get order IDs for this vendor
+      const { data: orders } = await supabase
+        .from("orders")
+        .select("id")
+        .eq("vendor_id", user!.id);
+      if (!orders || orders.length === 0) return [];
+      const orderIds = orders.map(o => o.id);
+      const { data } = await supabase
+        .from("order_feedback")
+        .select("*")
+        .in("order_id", orderIds)
+        .order("created_at", { ascending: false })
+        .limit(10);
+      return data || [];
+    },
+    enabled: !!user,
+  });
+
   const stats = [
     { label: "Products Listed", value: String(productCount), icon: Store },
     { label: "Orders Today", value: String(todayOrders), icon: Package },
