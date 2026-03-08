@@ -139,14 +139,15 @@ const CustomerCart = () => {
                     <p className="text-xs text-muted-foreground">₹{item.price} / {item.unit}</p>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Button size="icon" variant="outline" className="h-7 w-7" onClick={() => updateQuantity(item.product_id, item.quantity - 1)}>
+                    <Button size="icon" variant="outline" className="h-7 w-7" onClick={() => updateQuantity(item.product_id, item.quantity - getStep(item.unit))}>
                       <Minus className="h-3 w-3" />
                     </Button>
-                    <span className="w-6 text-center text-sm font-medium">{item.quantity}</span>
-                    <Button size="icon" variant="outline" className="h-7 w-7" onClick={() => updateQuantity(item.product_id, item.quantity + 1)}>
+                    <span className="w-8 text-center text-sm font-medium">{formatQty(item.quantity, item.unit)}</span>
+                    <Button size="icon" variant="outline" className="h-7 w-7" onClick={() => updateQuantity(item.product_id, item.quantity + getStep(item.unit))}>
                       <Plus className="h-3 w-3" />
                     </Button>
                   </div>
+                  <p className="text-xs text-muted-foreground">{item.unit}</p>
                   <p className="font-medium text-sm w-16 text-right">₹{(item.price * item.quantity).toFixed(0)}</p>
                   <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => removeItem(item.product_id)}>
                     <Trash2 className="h-3.5 w-3.5 text-destructive" />
