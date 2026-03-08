@@ -219,6 +219,28 @@ const VendorDashboard = () => {
                 <p className="text-xs text-muted-foreground mt-2">Current: {profile.latitude.toFixed(5)}, {profile.longitude.toFixed(5)}</p>
               )}
             </div>
+            {/* Shop Address */}
+            <div className="px-6 pb-5 pt-0 border-t border-border mt-0 pt-4">
+              <div className="flex items-center gap-2 mb-2">
+                <Home className="h-3.5 w-3.5 text-muted-foreground" />
+                <p className="text-xs text-muted-foreground font-medium">Shop address (typed):</p>
+              </div>
+              {profile?.shop_address && (
+                <p className="text-sm text-foreground mb-2 bg-muted/50 rounded-md px-3 py-2">{profile.shop_address}</p>
+              )}
+              <div className="flex gap-2">
+                <Input
+                  placeholder="e.g. 42, MG Road, Indiranagar, Bangalore 560038"
+                  value={shopAddress}
+                  onChange={(e) => setShopAddress(e.target.value)}
+                  className="text-sm"
+                  maxLength={300}
+                />
+                <Button size="sm" onClick={saveShopAddress} disabled={savingAddress || !shopAddress.trim()}>
+                  {savingAddress ? "Saving..." : "Save"}
+                </Button>
+              </div>
+            </div>
           </Card>
         </motion.div>
 
