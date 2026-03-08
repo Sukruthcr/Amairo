@@ -30,6 +30,7 @@ import RiderEarnings from "./pages/rider/RiderEarnings";
 import CustomerShop from "./pages/customer/CustomerShop";
 import CustomerCart from "./pages/customer/CustomerCart";
 import CustomerOrders from "./pages/customer/CustomerOrders";
+import CustomerProfile from "./pages/customer/CustomerProfile";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -76,6 +77,7 @@ const App = () => (
               <Route path="/customer/shop" element={<ProtectedRoute requiredRole="customer"><CustomerShop /></ProtectedRoute>} />
               <Route path="/customer/cart" element={<ProtectedRoute requiredRole="customer"><CustomerCart /></ProtectedRoute>} />
               <Route path="/customer/orders" element={<ProtectedRoute requiredRole="customer"><CustomerOrders /></ProtectedRoute>} />
+              <Route path="/customer/profile" element={<ProtectedRoute requiredRole="customer"><CustomerProfile /></ProtectedRoute>} />
 
               <Route path="*" element={<NotFound />} />
             </Routes>

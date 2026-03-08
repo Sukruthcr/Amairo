@@ -4,14 +4,16 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
-import { ShoppingCart, Minus, Plus, Trash2, ImageIcon, MapPin, Locate } from "lucide-react";
-import { useState } from "react";
+import { ShoppingCart, Minus, Plus, Trash2, ImageIcon, MapPin, Locate, CreditCard, Banknote } from "lucide-react";
+import { useState, useEffect } from "react";
 
 const COUNTABLE_UNITS = ["piece", "packet", "bottle", "tube", "bar", "dozen", "bundle", "box", "can", "pair"];
 const isCountable = (unit: string) => COUNTABLE_UNITS.includes(unit);
@@ -28,6 +30,31 @@ const CustomerCart = () => {
   const [customerLat, setCustomerLat] = useState<number | null>(null);
   const [customerLng, setCustomerLng] = useState<number | null>(null);
   const [locating, setLocating] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState<string>("cod");
+
+  // Fetch saved profile address
+  const { data: profile } = useQuery({
+    queryKey: ["customer-profile", user?.id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("shop_address, latitude, longitude")
+        .eq("user_id", user!.id)
+        .single();
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!user,
+  });
+
+  // Auto-fill from saved profile
+  useEffect(() => {
+    if (profile) {
+      if (profile.shop_address && !address) setAddress(profile.shop_address);
+      if (profile.latitude && !customerLat) setCustomerLat(profile.latitude);
+      if (profile.longitude && !customerLng) setCustomerLng(profile.longitude);
+    }
+  }, [profile]);
 
   const getLocation = () => {
     if (!navigator.geolocation) {
@@ -42,7 +69,7 @@ const CustomerCart = () => {
         setLocating(false);
         toast({ title: "📍 Location captured!" });
       },
-      (err) => {
+      () => {
         setLocating(false);
         toast({ title: "Location access denied", description: "Please enable location access and try again", variant: "destructive" });
       },
@@ -81,7 +108,8 @@ const CustomerCart = () => {
             status: "pending",
             customer_lat: customerLat,
             customer_lng: customerLng,
-          })
+            payment_method: paymentMethod,
+          } as any)
           .select("id")
           .single();
         if (orderErr) throw orderErr;
@@ -168,6 +196,9 @@ const CustomerCart = () => {
                     maxLength={500}
                     required
                   />
+                  {profile?.shop_address && (
+                    <p className="text-[11px] text-muted-foreground mt-1">📍 Auto-filled from your saved profile</p>
+                  )}
                 </div>
 
                 <div>
@@ -185,29 +216,51 @@ const CustomerCart = () => {
                     )}
                     <p className="text-[11px] text-muted-foreground">Or enter coordinates manually:</p>
                     <div className="grid grid-cols-2 gap-2">
-                      <Input
-                        type="number"
-                        step="any"
-                        placeholder="Latitude"
-                        value={customerLat ?? ""}
-                        onChange={(e) => setCustomerLat(e.target.value ? parseFloat(e.target.value) : null)}
-                      />
-                      <Input
-                        type="number"
-                        step="any"
-                        placeholder="Longitude"
-                        value={customerLng ?? ""}
-                        onChange={(e) => setCustomerLng(e.target.value ? parseFloat(e.target.value) : null)}
-                      />
+                      <Input type="number" step="any" placeholder="Latitude" value={customerLat ?? ""} onChange={(e) => setCustomerLat(e.target.value ? parseFloat(e.target.value) : null)} />
+                      <Input type="number" step="any" placeholder="Longitude" value={customerLng ?? ""} onChange={(e) => setCustomerLng(e.target.value ? parseFloat(e.target.value) : null)} />
                     </div>
                   </div>
                 </div>
+              </CardContent>
+            </Card>
 
-                <div className="flex items-center justify-between pt-2 border-t border-border">
+            {/* Payment Method */}
+            <Card>
+              <CardHeader><CardTitle className="text-lg">Payment Method</CardTitle></CardHeader>
+              <CardContent>
+                <RadioGroup value={paymentMethod} onValueChange={setPaymentMethod} className="space-y-3">
+                  <label className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-all ${paymentMethod === "cod" ? "border-primary bg-primary/5 ring-1 ring-primary/20" : "border-border hover:border-muted-foreground/30"}`}>
+                    <RadioGroupItem value="cod" />
+                    <Banknote className="h-5 w-5 text-green-600 shrink-0" />
+                    <div>
+                      <p className="text-sm font-medium">Cash on Delivery</p>
+                      <p className="text-xs text-muted-foreground">Pay when your order arrives</p>
+                    </div>
+                  </label>
+                  <label className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-all ${paymentMethod === "online" ? "border-primary bg-primary/5 ring-1 ring-primary/20" : "border-border hover:border-muted-foreground/30"}`}>
+                    <RadioGroupItem value="online" />
+                    <CreditCard className="h-5 w-5 text-blue-600 shrink-0" />
+                    <div>
+                      <p className="text-sm font-medium">Online Payment</p>
+                      <p className="text-xs text-muted-foreground">Pay via UPI, card, or net banking</p>
+                    </div>
+                  </label>
+                </RadioGroup>
+              </CardContent>
+            </Card>
+
+            {/* Order Summary */}
+            <Card>
+              <CardContent className="pt-6">
+                <div className="flex items-center justify-between pb-3 border-b border-border">
                   <span className="font-medium">Total</span>
                   <span className="text-xl font-display font-bold">₹{total.toFixed(0)}</span>
                 </div>
-                <Button className="w-full" size="lg" onClick={placeOrder} disabled={placing}>
+                <div className="flex items-center justify-between pt-3 pb-1 text-sm text-muted-foreground">
+                  <span>Payment</span>
+                  <span className="font-medium text-foreground">{paymentMethod === "cod" ? "💵 Cash on Delivery" : "💳 Online Payment"}</span>
+                </div>
+                <Button className="w-full mt-4" size="lg" onClick={placeOrder} disabled={placing}>
                   {placing ? "Placing Order..." : "Place Order"}
                 </Button>
               </CardContent>
