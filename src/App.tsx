@@ -16,6 +16,7 @@ import AdminVendors from "./pages/admin/AdminVendors";
 import AdminRiders from "./pages/admin/AdminRiders";
 import AdminOrders from "./pages/admin/AdminOrders";
 import AdminUsers from "./pages/admin/AdminUsers";
+import AdminMessages from "./pages/admin/AdminMessages";
 import VendorDashboard from "./pages/vendor/VendorDashboard";
 import VendorProducts from "./pages/vendor/VendorProducts";
 import VendorStockUpdate from "./pages/vendor/VendorStockUpdate";
@@ -53,6 +54,7 @@ const App = () => (
               <Route path="/admin/riders" element={<ProtectedRoute requiredRole="admin"><AdminRiders /></ProtectedRoute>} />
               <Route path="/admin/orders" element={<ProtectedRoute requiredRole="admin"><AdminOrders /></ProtectedRoute>} />
               <Route path="/admin/users" element={<ProtectedRoute requiredRole="admin"><AdminUsers /></ProtectedRoute>} />
+              <Route path="/admin/messages" element={<ProtectedRoute requiredRole="admin"><AdminMessages /></ProtectedRoute>} />
 
               {/* Vendor */}
               <Route path="/vendor" element={<ProtectedRoute requiredRole="vendor"><VendorDashboard /></ProtectedRoute>} />
