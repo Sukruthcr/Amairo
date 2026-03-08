@@ -20,7 +20,27 @@ const RiderDeliveries = () => {
   const { user } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const [riderLat, setRiderLat] = useState<number | null>(null);
+  const [riderLng, setRiderLng] = useState<number | null>(null);
 
+  // Auto-detect rider's current location
+  const refreshRiderLocation = useCallback(() => {
+    if (!navigator.geolocation) return;
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setRiderLat(pos.coords.latitude);
+        setRiderLng(pos.coords.longitude);
+      },
+      () => {},
+      { enableHighAccuracy: true }
+    );
+  }, []);
+
+  useEffect(() => {
+    refreshRiderLocation();
+    const interval = setInterval(refreshRiderLocation, 30000); // refresh every 30s
+    return () => clearInterval(interval);
+  }, [refreshRiderLocation]);
   const { data: deliveries = [], isLoading } = useQuery({
     queryKey: ["rider-deliveries", user?.id],
     queryFn: async () => {
