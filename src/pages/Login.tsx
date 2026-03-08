@@ -188,7 +188,7 @@ const Login = () => {
       <div className="w-full lg:w-1/2 flex flex-col">
         {/* Mobile header */}
         <div className="lg:hidden px-6 py-4 border-b border-border">
-          <h2 className="text-xl font-display font-bold text-foreground">Smart Delivery Hub</h2>
+          <h2 className="text-xl font-display font-bold text-foreground">Amairo</h2>
         </div>
 
         <div className="flex-1 flex items-center justify-center px-6 py-10 overflow-y-auto bg-background">
