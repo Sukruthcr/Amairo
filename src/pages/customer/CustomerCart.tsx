@@ -13,6 +13,11 @@ import { motion } from "framer-motion";
 import { ShoppingCart, Minus, Plus, Trash2, ImageIcon, MapPin, Locate } from "lucide-react";
 import { useState } from "react";
 
+const COUNTABLE_UNITS = ["piece", "packet", "bottle", "tube", "bar", "dozen", "bundle", "box", "can", "pair"];
+const isCountable = (unit: string) => COUNTABLE_UNITS.includes(unit);
+const getStep = (unit: string) => isCountable(unit) ? 1 : 0.5;
+const formatQty = (qty: number, unit: string) => isCountable(unit) ? qty : qty % 1 === 0 ? qty : qty.toFixed(1);
+
 const CustomerCart = () => {
   const { items, updateQuantity, removeItem, clearCart, total } = useCart();
   const { user } = useAuth();
