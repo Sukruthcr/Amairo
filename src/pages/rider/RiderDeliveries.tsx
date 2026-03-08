@@ -112,6 +112,17 @@ const RiderDeliveries = () => {
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
           <h1 className="text-3xl font-bold mb-2">My Deliveries</h1>
           <p className="text-muted-foreground">Manage your active and completed deliveries</p>
+          <div className="mt-3 flex items-center gap-2 text-xs">
+            <div className={`h-2 w-2 rounded-full ${riderLat ? "bg-green-500" : "bg-red-500"}`} />
+            <span className="text-muted-foreground">
+              {riderLat && riderLng
+                ? `Your GPS active (${riderLat.toFixed(4)}, ${riderLng.toFixed(4)})`
+                : "GPS not available — enable location for navigation"}
+            </span>
+            <Button size="sm" variant="ghost" className="h-6 text-xs px-2" onClick={refreshRiderLocation}>
+              <Locate className="h-3 w-3 mr-1" /> Refresh
+            </Button>
+          </div>
         </motion.div>
 
         {isLoading ? (
