@@ -49,6 +49,10 @@ const App = () => (
 
             {/* Vendor */}
             <Route path="/vendor" element={<ProtectedRoute requiredRole="vendor"><VendorDashboard /></ProtectedRoute>} />
+            <Route path="/vendor/products" element={<ProtectedRoute requiredRole="vendor"><VendorProducts /></ProtectedRoute>} />
+            <Route path="/vendor/stock" element={<ProtectedRoute requiredRole="vendor"><VendorStockUpdate /></ProtectedRoute>} />
+            <Route path="/vendor/orders" element={<ProtectedRoute requiredRole="vendor"><VendorOrders /></ProtectedRoute>} />
+            <Route path="/vendor/sales" element={<ProtectedRoute requiredRole="vendor"><VendorSales /></ProtectedRoute>} />
 
             {/* Rider */}
             <Route path="/rider" element={<ProtectedRoute requiredRole="rider"><RiderDashboard /></ProtectedRoute>} />
