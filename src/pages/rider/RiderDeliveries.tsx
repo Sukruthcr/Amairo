@@ -8,8 +8,8 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { motion } from "framer-motion";
-import { Package, MapPin, CheckCircle, Truck, Navigation, Store, User } from "lucide-react";
-import { useEffect } from "react";
+import { Package, MapPin, CheckCircle, Truck, Navigation, Store, User, Locate } from "lucide-react";
+import { useEffect, useState, useCallback } from "react";
 
 const statusFlow: Record<string, { next: string; label: string; icon: any }> = {
   dispatched: { next: "picked_up", label: "Mark Picked Up", icon: Package },
@@ -20,7 +20,27 @@ const RiderDeliveries = () => {
   const { user } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const [riderLat, setRiderLat] = useState<number | null>(null);
+  const [riderLng, setRiderLng] = useState<number | null>(null);
 
+  // Auto-detect rider's current location
+  const refreshRiderLocation = useCallback(() => {
+    if (!navigator.geolocation) return;
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setRiderLat(pos.coords.latitude);
+        setRiderLng(pos.coords.longitude);
+      },
+      () => {},
+      { enableHighAccuracy: true }
+    );
+  }, []);
+
+  useEffect(() => {
+    refreshRiderLocation();
+    const interval = setInterval(refreshRiderLocation, 30000); // refresh every 30s
+    return () => clearInterval(interval);
+  }, [refreshRiderLocation]);
   const { data: deliveries = [], isLoading } = useQuery({
     queryKey: ["rider-deliveries", user?.id],
     queryFn: async () => {
@@ -78,8 +98,9 @@ const RiderDeliveries = () => {
     onError: (e: any) => toast({ title: "Error", description: e.message, variant: "destructive" }),
   });
 
-  const openGoogleMaps = (lat: number, lng: number, label: string) => {
-    window.open(`https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`, "_blank");
+  const openGoogleMaps = (destLat: number, destLng: number) => {
+    const origin = riderLat && riderLng ? `&origin=${riderLat},${riderLng}` : "";
+    window.open(`https://www.google.com/maps/dir/?api=1&destination=${destLat},${destLng}${origin}&travelmode=driving`, "_blank");
   };
 
   const active = deliveries.filter((d: any) => d.status !== "delivered");
@@ -91,6 +112,17 @@ const RiderDeliveries = () => {
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
           <h1 className="text-3xl font-bold mb-2">My Deliveries</h1>
           <p className="text-muted-foreground">Manage your active and completed deliveries</p>
+          <div className="mt-3 flex items-center gap-2 text-xs">
+            <div className={`h-2 w-2 rounded-full ${riderLat ? "bg-green-500" : "bg-red-500"}`} />
+            <span className="text-muted-foreground">
+              {riderLat && riderLng
+                ? `Your GPS active (${riderLat.toFixed(4)}, ${riderLng.toFixed(4)})`
+                : "GPS not available — enable location for navigation"}
+            </span>
+            <Button size="sm" variant="ghost" className="h-6 text-xs px-2" onClick={refreshRiderLocation}>
+              <Locate className="h-3 w-3 mr-1" /> Refresh
+            </Button>
+          </div>
         </motion.div>
 
         {isLoading ? (
@@ -157,7 +189,7 @@ const RiderDeliveries = () => {
                                 </p>
                               </div>
                               {hasVendorLoc && o.status === "dispatched" && (
-                                <Button size="sm" variant="default" className="gap-1 shrink-0" onClick={() => openGoogleMaps(vendor.latitude, vendor.longitude, "Vendor")}>
+                                <Button size="sm" variant="default" className="gap-1 shrink-0" onClick={() => openGoogleMaps(vendor.latitude, vendor.longitude)}>
                                   <Navigation className="h-3.5 w-3.5" /> Navigate
                                 </Button>
                               )}
@@ -175,7 +207,7 @@ const RiderDeliveries = () => {
                                 </p>
                               </div>
                               {hasCustomerLoc && o.status === "picked_up" && (
-                                <Button size="sm" variant="default" className="gap-1 shrink-0" onClick={() => openGoogleMaps(o.customer_lat, o.customer_lng, "Customer")}>
+                                <Button size="sm" variant="default" className="gap-1 shrink-0" onClick={() => openGoogleMaps(o.customer_lat, o.customer_lng)}>
                                   <Navigation className="h-3.5 w-3.5" /> Navigate
                                 </Button>
                               )}
