@@ -16,6 +16,10 @@ import AdminRiders from "./pages/admin/AdminRiders";
 import AdminOrders from "./pages/admin/AdminOrders";
 import AdminUsers from "./pages/admin/AdminUsers";
 import VendorDashboard from "./pages/vendor/VendorDashboard";
+import VendorProducts from "./pages/vendor/VendorProducts";
+import VendorStockUpdate from "./pages/vendor/VendorStockUpdate";
+import VendorOrders from "./pages/vendor/VendorOrders";
+import VendorSales from "./pages/vendor/VendorSales";
 import RiderDashboard from "./pages/rider/RiderDashboard";
 import NotFound from "./pages/NotFound";
 
@@ -45,6 +49,10 @@ const App = () => (
 
             {/* Vendor */}
             <Route path="/vendor" element={<ProtectedRoute requiredRole="vendor"><VendorDashboard /></ProtectedRoute>} />
+            <Route path="/vendor/products" element={<ProtectedRoute requiredRole="vendor"><VendorProducts /></ProtectedRoute>} />
+            <Route path="/vendor/stock" element={<ProtectedRoute requiredRole="vendor"><VendorStockUpdate /></ProtectedRoute>} />
+            <Route path="/vendor/orders" element={<ProtectedRoute requiredRole="vendor"><VendorOrders /></ProtectedRoute>} />
+            <Route path="/vendor/sales" element={<ProtectedRoute requiredRole="vendor"><VendorSales /></ProtectedRoute>} />
 
             {/* Rider */}
             <Route path="/rider" element={<ProtectedRoute requiredRole="rider"><RiderDashboard /></ProtectedRoute>} />
