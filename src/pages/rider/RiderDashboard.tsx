@@ -44,12 +44,12 @@ const RiderDashboard = () => {
     return () => { supabase.removeChannel(channel); };
   }, [user, queryClient, toast]);
 
-  const { data: profile } = useQuery({
+  const { data: profile, refetch: refetchProfile } = useQuery({
     queryKey: ["rider-profile", user?.id],
     queryFn: async () => {
       const { data } = await supabase
         .from("profiles")
-        .select("full_name, phone, dl_number, pan_number, vehicle_details, approval_status")
+        .select("full_name, phone, dl_number, pan_number, vehicle_details, approval_status, avatar_url")
         .eq("user_id", user!.id)
         .single();
       return data;
