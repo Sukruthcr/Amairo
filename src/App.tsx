@@ -16,6 +16,7 @@ import AdminVendors from "./pages/admin/AdminVendors";
 import AdminRiders from "./pages/admin/AdminRiders";
 import AdminOrders from "./pages/admin/AdminOrders";
 import AdminUsers from "./pages/admin/AdminUsers";
+import AdminMessages from "./pages/admin/AdminMessages";
 import VendorDashboard from "./pages/vendor/VendorDashboard";
 import VendorProducts from "./pages/vendor/VendorProducts";
 import VendorStockUpdate from "./pages/vendor/VendorStockUpdate";
