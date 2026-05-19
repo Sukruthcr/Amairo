@@ -12,8 +12,10 @@ import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
-import { ShoppingCart, Minus, Plus, Trash2, ImageIcon, MapPin, Locate, CreditCard, Banknote } from "lucide-react";
-import { useState, useEffect } from "react";
+import { ShoppingCart, Minus, Plus, Trash2, ImageIcon, MapPin, Locate, CreditCard, Banknote, QrCode } from "lucide-react";
+import { useState, useEffect, useMemo } from "react";
+
+const UPI_ID = "6362482501-3@ybl";
 
 const COUNTABLE_UNITS = ["piece", "packet", "bottle", "tube", "bar", "dozen", "bundle", "box", "can", "pair"];
 const isCountable = (unit: string) => COUNTABLE_UNITS.includes(unit);
@@ -242,10 +244,33 @@ const CustomerCart = () => {
                     <CreditCard className="h-5 w-5 text-blue-600 shrink-0" />
                     <div>
                       <p className="text-sm font-medium">Online Payment</p>
-                      <p className="text-xs text-muted-foreground">Pay via UPI, card, or net banking</p>
+                      <p className="text-xs text-muted-foreground">Scan UPI QR code to pay</p>
                     </div>
                   </label>
                 </RadioGroup>
+
+                {paymentMethod === "online" && (
+                  <div className="mt-5 flex flex-col items-center gap-3 p-4 rounded-xl bg-white border border-border">
+                    <div className="flex items-center gap-2 text-sm font-medium text-foreground">
+                      <QrCode className="h-4 w-4 text-blue-600" />
+                      <span>Scan & Pay — ₹{total.toFixed(0)}</span>
+                    </div>
+                    <img
+                      src={`https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(`upi://pay?pa=${UPI_ID}&pn=QuickMart&am=${total.toFixed(2)}&cu=INR`)}`}
+                      alt="UPI QR Code"
+                      className="rounded-lg border"
+                      width={220}
+                      height={220}
+                    />
+                    <div className="text-center space-y-1">
+                      <p className="text-xs text-muted-foreground">UPI ID</p>
+                      <p className="text-sm font-semibold tracking-wide select-all">{UPI_ID}</p>
+                    </div>
+                    <p className="text-[11px] text-muted-foreground text-center max-w-[260px]">
+                      Open any UPI app (PhonePe, GPay, Paytm) and scan this QR code to complete payment. Then tap "Place Order".
+                    </p>
+                  </div>
+                )}
               </CardContent>
             </Card>
 
