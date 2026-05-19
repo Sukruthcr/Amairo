@@ -12,8 +12,10 @@ import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
-import { ShoppingCart, Minus, Plus, Trash2, ImageIcon, MapPin, Locate, CreditCard, Banknote } from "lucide-react";
-import { useState, useEffect } from "react";
+import { ShoppingCart, Minus, Plus, Trash2, ImageIcon, MapPin, Locate, CreditCard, Banknote, QrCode } from "lucide-react";
+import { useState, useEffect, useMemo } from "react";
+
+const UPI_ID = "6362482501-3@ybl";
 
 const COUNTABLE_UNITS = ["piece", "packet", "bottle", "tube", "bar", "dozen", "bundle", "box", "can", "pair"];
 const isCountable = (unit: string) => COUNTABLE_UNITS.includes(unit);
